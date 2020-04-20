@@ -1,0 +1,69 @@
+﻿@inject FlashCardsDbService Database
+<h3>Decks</h3>
+<div>
+    <p>Create Deck</p>
+    <div>
+        <MatTextField @bind-Value="newDeck.Name" Label="Name"></MatTextField><br />
+        <MatTextField @bind-Value="newDeck.Subject" Label="Subject"></MatTextField><br />
+        <button class="btn btn-primary" @onclick="AddDeck">Add Deck</button>
+    </div>
+    @if (isAddCard)
+    {
+        <p>Add Cards</p>
+        <div>
+            <MatTextField @bind-Value="question" TextArea="true" FullWidth="true" Label="Flashcard Question"></MatTextField><br />
+            <MatTextField @bind-Value="answer" TextArea="true" FullWidth="true" Label="Correct Answer"></MatTextField><br />
+            <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to Deck</button>
+        </div>
+    }
+    @if (selectedDeck != null && selectedDeck.Cards != null)
+    {
+        <p>Cards in deck</p>        
+        <ol>
+            @foreach (var card in selectedDeck.Cards)
+            {
+                <li>
+                    <ul>
+                        <li>Question: @card.Question</li>
+                        <li>Answer: @card.Answer</li>
+                    </ul>
+                </li>
+            }
+        </ol>
+    }
+</div>
+
+@code {
+    Deck newDeck = new Deck();
+    [CascadingParameter]
+    Deck selectedDeck { get; set; }
+    [CascadingParameter]
+    List<Deck> UserDecks { get; set; }
+    [Parameter]
+    public EventCallback<List<Deck>> UserDeckChanged { get; set; }    
+    string question;
+    string answer;
+    bool isAddCard = false;
+
+    async Task AddDeck()
+    {
+        if (UserDecks == null)
+            UserDecks = new List<Deck>();
+        UserDecks.Add(newDeck);
+        selectedDeck = newDeck;
+        await UserDeckChanged.InvokeAsync(UserDecks);
+        await Database.AddDeck(newDeck.Name, newDeck.Subject);
+        isAddCard = true;
+    }
+    async Task AddCardToDeck()
+    {
+        if (selectedDeck.Cards == null)
+            selectedDeck.Cards = new List<Card>();
+        var newCard = new Card() { Question = question, Answer = answer };
+        selectedDeck.Cards.Add(newCard);
+        await Database.AddCardToDeck(newCard, selectedDeck);
+        question = null;
+        answer = null;
+        StateHasChanged();
+    }
+}

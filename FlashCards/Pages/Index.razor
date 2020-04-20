@@ -1,0 +1,30 @@
+﻿@page "/"
+
+@inject FlashCardsDbService Database
+
+<h1>Flash Cards</h1>
+@if (!userAuth)
+{
+    <h2>Please Sign-in</h2>
+}
+else
+{
+    <Decks></Decks>
+}
+
+
+@code {
+    bool userAuth = false;
+
+
+    protected override Task OnInitializedAsync()
+    {
+        return Task.Run(() =>
+        {
+            if (Database.HasUser)
+            {
+                userAuth = true;
+            }
+        });
+    }
+}
