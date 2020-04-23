@@ -1,60 +1,73 @@
 ﻿@inject FlashCardsDbService Database
-<h3>Decks</h3>
-<div>
-    <p>Create Deck</p>
-    <div>
-        <MatTextField @bind-Value="newDeck.Name" Label="Name"></MatTextField><br />
-        <MatTextField @bind-Value="newDeck.Subject" Label="Subject"></MatTextField><br />
-        <button class="btn btn-primary" @onclick="AddDeck">Add Deck</button>
-    </div>
-    @if (isAddCard)
+@inject WordsApiService WordsApi
+
+<div class="content">
+
+    <MatSlideToggle @onclick="ToggleVocab" @bind-Value="@isVocab" Label="@toggleLabel"></MatSlideToggle>
+    @if (!isVocab)
     {
-        <p>Add Cards</p>
-        <div>
-            <MatTextField @bind-Value="question" TextArea="true" FullWidth="true" Label="Flashcard Question"></MatTextField><br />
-            <MatTextField @bind-Value="answer" TextArea="true" FullWidth="true" Label="Correct Answer"></MatTextField><br />
+        <h4>Add Standard Cards</h4>
+        <div class="col">
+            <MatTextField Style="width:50em" @bind-Value="question" TextArea="true" Label="Flashcard Question"></MatTextField><br />
+            <MatTextField Style="width:50em" @bind-Value="answer" TextArea="true" Label="Correct Answer"></MatTextField><br />
+
             <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to Deck</button>
         </div>
     }
-    @if (selectedDeck != null && selectedDeck.Cards != null)
+    else
     {
-        <p>Cards in deck</p>        
-        <ol>
-            @foreach (var card in selectedDeck.Cards)
-            {
-                <li>
-                    <ul>
-                        <li>Question: @card.Question</li>
-                        <li>Answer: @card.Answer</li>
-                    </ul>
-                </li>
-            }
-        </ol>
+        <h4>Create Vocabulary Flashcards</h4>
+        <div class="col">
+            <MatTextField @bind-Value="wordSearch" @onkeyup="VocakKeyUp" Label="Vocab Word"></MatTextField>
+            <button class="btn btn-primary" @onclick="CreateVocabCard">Add Vocab Card</button>
+        </div>
     }
 </div>
-
+<div class="content">
+    @if (selectedDeck != null && selectedDeck.Cards != null)
+    {
+        <p>Cards in deck</p>
+        <div class="card-columns" style="flex:none; width:69em">
+            @foreach (var card in selectedDeck.Cards)
+            {
+                <div class="card smallCard mat-elevation-z24">
+                    <ul>
+                        <li><span style="font-size:1.3em">Question</span><br /> @card.Question</li>
+                        <li><span style="font-size:1.3em">Answer</span><br /> @((MarkupString)card.Answer)</li>
+                    </ul>
+                </div>
+            }
+        </div>
+    }
+</div>
 @code {
-    Deck newDeck = new Deck();
+
     [CascadingParameter]
     Deck selectedDeck { get; set; }
     [CascadingParameter]
     List<Deck> UserDecks { get; set; }
     [Parameter]
-    public EventCallback<List<Deck>> UserDeckChanged { get; set; }    
+    public List<Card> UserCards { get; set; }
+    [Parameter]
+    public EventCallback<List<Card>> UserCardsChanged { get; set; }
     string question;
     string answer;
-    bool isAddCard = false;
-
-    async Task AddDeck()
+    string wordSearch;
+    string toggleLabel = "Standard Card";
+    bool isVocab = false;
+    protected override async Task OnInitializedAsync()
     {
-        if (UserDecks == null)
-            UserDecks = new List<Deck>();
-        UserDecks.Add(newDeck);
-        selectedDeck = newDeck;
-        await UserDeckChanged.InvokeAsync(UserDecks);
-        await Database.AddDeck(newDeck.Name, newDeck.Subject);
-        isAddCard = true;
+        UserCards = await Database.GetDeckCards(selectedDeck);
+        if (selectedDeck.Cards == null)
+            selectedDeck.Cards = new List<Card>();
+        selectedDeck.Cards.AddRange(UserCards);
+        await UserCardsChanged.InvokeAsync(UserCards);
     }
+    void ToggleVocab()
+    {
+        toggleLabel = toggleLabel == "Standard Card" ? "Vocabulary Card" : "Standard Card";
+    }
+
     async Task AddCardToDeck()
     {
         if (selectedDeck.Cards == null)
@@ -64,6 +77,33 @@
         await Database.AddCardToDeck(newCard, selectedDeck);
         question = null;
         answer = null;
+
+        await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
         StateHasChanged();
+    }
+    async Task CreateVocabCard()
+    {
+        if (wordSearch == null)
+            return;
+        var definition = await WordsApi.GetDefinitions(wordSearch);
+        var firstDefinition = definition?.Definitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITONA FOUND" };
+        var newCard = new Card()
+        {
+            Question = wordSearch,
+            Answer = $"<strong>Definition:</strong> {firstDefinition.Definition} <p><strong>Part of Speech: </strong> {firstDefinition.PartOfSpeech} </p>"
+        };
+        if (selectedDeck.Cards == null)
+            selectedDeck.Cards = new List<Card>();
+        selectedDeck.Cards.Add(newCard);
+        await Database.AddCardToDeck(newCard, selectedDeck);
+        wordSearch = null;
+        StateHasChanged();
+    }
+    async Task VocakKeyUp(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await CreateVocabCard();
+        }
     }
 }

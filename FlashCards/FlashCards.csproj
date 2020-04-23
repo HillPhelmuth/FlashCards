@@ -6,6 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\WeatherForecast.cs" />
+    <Compile Remove="Data\WeatherForecastService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\FetchData.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorAnimation" Version="1.0.3" />
     <PackageReference Include="MatBlazor" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.3" />
@@ -13,6 +22,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="RestSharp" Version="106.10.1" />
+    <PackageReference Include="RestSharp.Newtonsoft.Json" Version="1.5.1" />
   </ItemGroup>
 
 </Project>

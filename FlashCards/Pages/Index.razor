@@ -9,22 +9,139 @@
 }
 else
 {
-    <Decks></Decks>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary"
+                    @onclick="Reset">
+                Select or Create New Deck
+            </button>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary"
+                    @onclick="ReviewCards">
+                Review a Deck
+            </button>
+        </div>
+    </div>
+    @if (!isAddCard)
+    {
+        @if (userHasDecks)
+        {
+            <p>Select Deck</p>
+            <MatSelect @bind-Value="deckName">
+                <MatOptionString></MatOptionString>
+                @foreach (var deck in UserDecks)
+                 {
+                    <MatOptionString Value="@deck.Name">
+                        <p>Name: @deck.Name </p>
+                        <p>Subject: @deck.Subject</p>
+                    </MatOptionString>
+                 }
+                
+
+            </MatSelect>
+            <button class="btn btn-primary" @onclick="SelectDeck">Select Deck</button>
+            <br />
+            <button class="btn btn-secondary" @onclick="@(() => addNewToggle = !addNewToggle)"> Or Add New Deck</button>
+        }
+        @if (addNewToggle)
+        {
+            <p>Create Deck</p>
+            <MatTextField @bind-Value="newDeck.Name" Label="Name"></MatTextField>
+            <br />
+            <MatTextField @bind-Value="newDeck.Subject" Label="Subject"></MatTextField>
+            <br />
+            <button class="btn btn-primary" @onclick="AddDeck">Add Deck</button>
+        }
+    }
+    @if (isSelectDeck)
+    {
+        <CascadingValue Value="selectedDeck">
+            <CascadingValue Value="UserDecks">
+                <Decks />
+            </CascadingValue>
+        </CascadingValue>
+    }
+    @if (isReview)
+    {
+        <CascadingValue Value="deckCards">
+            <CascadingValue Value="selectedDeck">
+                <CardReview />
+            </CascadingValue>
+        </CascadingValue>
+    }
 }
 
-
 @code {
-    bool userAuth = false;
-
-
-    protected override Task OnInitializedAsync()
+    string temp1;
+    string temp2;
+    void OnTemp(KeyboardEventArgs args)
     {
-        return Task.Run(() =>
+        temp2 = $"You just pressed {args.Key}";
+    }
+
+    [Parameter]
+    public List<Deck> UserDecks { get; set; }
+    [Parameter]
+    public Deck selectedDeck { get; set; }
+    [Parameter]
+    public List<Card> deckCards { get; set; }
+    Deck newDeck = new Deck();
+    string deckName;
+    bool userAuth = false;
+    bool userHasDecks = false;
+    bool addNewToggle = false;
+    bool isAddCard = false;
+    bool isSelectDeck = false;
+    bool isReview = false;
+    protected override async Task OnInitializedAsync()
+    {
+        userAuth = Database.HasUser;
+        UserDecks = await Database.GetUserDecks();
+        if (UserDecks.Count > 0)
+            userHasDecks = true;
+        else
+            addNewToggle = true;
+    }
+    async Task AddDeck()
+    {
+        if (UserDecks == null)
+            UserDecks = new List<Deck>();
+        UserDecks.Add(newDeck);
+        selectedDeck = newDeck;
+
+        await Database.AddDeck(newDeck.Name, newDeck.Subject);
+        isAddCard = true;
+        isSelectDeck = true;
+    }
+    async Task SelectDeck()
+    {
+        await Task.Run(() =>
         {
-            if (Database.HasUser)
-            {
-                userAuth = true;
-            }
+            selectedDeck = UserDecks.Where(x => x.Name == deckName).FirstOrDefault();
+            isAddCard = true;
+            isSelectDeck = true;
         });
+        //StateHasChanged();
+    }
+    async Task ReviewCards()
+    {
+        deckCards = await Database.GetDeckCards(selectedDeck);
+        isAddCard = true;
+        isSelectDeck = false;
+        isReview = true;
+
+    }
+    void Reset()
+    {
+        userHasDecks = false;
+        addNewToggle = false;
+        isAddCard = false;
+        isReview = false;
+        isSelectDeck = false;
+        if (UserDecks.Count > 0)
+            userHasDecks = true;
+        else
+            addNewToggle = true;
     }
 }

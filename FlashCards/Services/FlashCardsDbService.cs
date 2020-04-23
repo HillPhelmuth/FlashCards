@@ -32,12 +32,12 @@ namespace FlashCards.Services
         public async Task AddDeck(string deckname, string subject)
         {
             var userId = UserId;
-            var playlist = new Deck() { Name = deckname, User_ID = userId, Subject = subject };
+            var deck = new Deck() { Name = deckname, User_ID = userId, Subject = subject };
             var context = _context;
-            var userPlaylist = context.DecksTable.ToList().Where(x => x.Name == deckname && x.User_ID == userId).FirstOrDefault();
-            if (userPlaylist != playlist)
+            var userDeck = context.DecksTable.ToList().Where(x => x.Name == deckname && x.User_ID == userId).FirstOrDefault();
+            if (userDeck != deck)
             {
-                await context.AddAsync(playlist);
+                await context.AddAsync(deck);
                 await context.SaveChangesAsync();
             }
         }
@@ -62,10 +62,13 @@ namespace FlashCards.Services
             if (card.ID > 0)
                 return;
             var context = _context;
+            
             // Match name and user_id to find stored DecksTable primary key
             card.Decks_ID = context.DecksTable
                 .Where(x => x.User_ID == UserId && x.Name == deck.Name)
                 .Select(x => x.ID).FirstOrDefault();
+            if (_context.CardsTable.Where(x => x.Question == card.Question && x.Decks_ID == card.Decks_ID).Any())
+                return;
             await context.AddAsync(card);
             await context.SaveChangesAsync();
         }
@@ -75,6 +78,17 @@ namespace FlashCards.Services
             var context = _context;
             var deckId = deck.ID;
             return await context.CardsTable.Where(x => x.Decks_ID == deckId).ToListAsync();
+        }
+        [HttpPut]
+        public async Task UpdateDeckCards(Card card, Deck deck)
+        {
+            var context = _context;
+            var cardToUpdate = await context.CardsTable.Where(x => x.ID == card.ID).FirstOrDefaultAsync();
+            if (deck.ID != card.Decks_ID)
+            {
+                cardToUpdate = card;
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -41,10 +41,10 @@ app {
             margin-left: 1.5rem;
         }
 
-.main .top-row a:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+        .main .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
@@ -129,12 +129,12 @@ app {
     z-index: 1000;
 }
 
-#blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
-}
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
 
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
@@ -180,4 +180,69 @@ app {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+}
+
+.flashCard {
+    width: 32em;
+    height: 24em;
+    flex: none;
+    border: 3px solid #000000;
+    padding: 1em;
+    margin: .5em;
+    background-color: lightgray;
+    font-size: 175%;
+}
+    /*.flashCard:hover {
+        transform: scale(1.2, 1.2);
+        cursor: pointer;
+        -webkit-transition: transform 1s ease;
+        -moz-transition: transform 1s ease;
+        -o-transition: transform 1s ease;
+        transition: transform 1s ease;
+        transition-delay: .5s
+    }*/
+.smallCard {
+    width: 21em;
+    height: 16em;
+    flex: none;
+    border: 3px solid #000000;
+    padding: 1em;
+    margin: .5em;
+    background-color: lightgray;
+    
+}
+    .smallCard:hover {
+        transform: scale(1.2, 1.2);
+        cursor: pointer;
+        -webkit-transition: transform 1s ease;
+        -moz-transition: transform 1s ease;
+        -o-transition: transform 1s ease;
+        transition: transform 1s ease;
+        transition-delay: .5s
+    }
+
+.card-columns-four {
+    -webkit-column-count: 4;
+    -moz-column-count: 4;
+    column-count: 4;
+    -webkit-column-gap: .25rem;
+    -moz-column-gap: .25rem;
+    column-gap: .05em;
+    column
+    margin-top:2em;
+    orphans: 1;
+    widows: 1;
+    column-width:23em;
+    
+}
+
+    .card-columns-four .card {
+        display: inline-block;
+        width: 100%
+    }
+.wrong {
+    background-color:red;
+}
+.correct {
+    background-color:green;
 }

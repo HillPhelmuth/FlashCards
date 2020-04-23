@@ -43,8 +43,9 @@ namespace FlashCards
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddSingleton<WeatherForecastService>();
-            services.AddTransient<FlashCardsDbService>();
+            services.AddScoped<FlashCardsDbService>();
+            services.AddScoped<WordsApiService>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
