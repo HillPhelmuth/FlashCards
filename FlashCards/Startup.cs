@@ -34,7 +34,7 @@ namespace FlashCards
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration["ConnectionStrings:DefaultConnection"]));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddDbContext<FlashCardsDbContext>(options =>
@@ -45,7 +45,12 @@ namespace FlashCards
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddTransient<FlashCardsDbService>();
             services.AddScoped<WordsApiService>();
-            
+            services.AddSignalR().AddAzureSignalR(options =>
+            {
+                options.ServerStickyMode =
+                    Microsoft.Azure.SignalR.ServerStickyMode.Required;
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
