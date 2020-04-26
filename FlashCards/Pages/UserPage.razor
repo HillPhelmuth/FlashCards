@@ -1,0 +1,80 @@
+﻿@inherits UserPageModel
+
+<h3 class="text-center">@deckName</h3>
+
+<div class="row">
+    <div class="col">
+        <button class="btn btn-primary" @onclick="Reset">
+            Change Deck
+        </button>
+    </div>    
+</div>
+
+@if (!isAddCard)
+{
+    @if (userHasDecks)
+    {
+        <div class="col" style="margin:auto; padding-left:12em; padding-right:12em">
+            <p>Select Deck</p>
+            <button class="PanelToggle mid" @onclick="@(() => panelOpenState = !panelOpenState)">
+                Select a deck
+            </button>
+            @if (panelOpenState)
+            {
+                <div class="col" style="margin:auto">
+                    <p style="color:red; font-size:1.5em">@deckDeleteMessage</p>
+                    <Animation Effect="Effect.LightSpeedIn" Speed="Speed.Faster">
+                        <MatRadioGroup @bind-Value="deckName">
+                        @foreach (var deck in UserDecks)
+                        {
+                            <br />
+                            <MatRadioButton Value="deck.Name">
+                                Name:
+                                <strong>@deck.Name</strong>,  Subject: <strong>@deck.Subject</strong>
+                            </MatRadioButton>
+                            <MatButton Class="@deck.CssConfirmClass" Style="align-content:center; margin-top:-.2em; color:red" Icon="close" Label="delete" @onclick="@(() => DeleteDeck(deck))"></MatButton>
+                        }
+                        </MatRadioGroup>
+                        <br />
+                        <button class="btn btn-primary" @onclick="SelectDeck">Select Deck</button>
+                    </Animation>
+                </div>
+            }
+            <br /><br />
+            <button class="btn btn-secondary" style="color:black; background-color:lightgreen" @onclick="@(() => addNewToggle = !addNewToggle)"> Add New Deck</button>
+        </div>
+    }
+    @if (addNewToggle)
+    {
+        <p>Create Deck</p>
+        <MatTextField @bind-Value="newDeck.Name" Label="Name"></MatTextField>
+        <br />
+        <MatTextField @bind-Value="newDeck.Subject" Label="Subject"></MatTextField>
+        <br />
+        <button class="btn btn-primary" @onclick="AddDeck">Add Deck</button>
+    }
+}
+@if (isSelectDeck)
+{
+    <div class="text-center">
+        <TabControl>
+
+            <CascadingValue Value="selectedDeck">
+                <CascadingValue Value="UserDecks">
+                    <TabPage Text="Deck Builder">
+                        <Decks UserCardsChanged="CardsChangeHandler" />
+                    </TabPage>
+                </CascadingValue>
+            </CascadingValue>
+
+            <CascadingValue Value="deckCards">
+                <CascadingValue Value="selectedDeck">
+                    <TabPage Text="Quiz Page">
+                        <CardReview />
+                    </TabPage>
+                </CascadingValue>
+            </CascadingValue>
+        </TabControl>
+    </div>
+}
+

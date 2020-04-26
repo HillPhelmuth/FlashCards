@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Data\WeatherForecast.cs" />
     <Compile Remove="Data\WeatherForecastService.cs" />
+    <Compile Remove="Models\VocabAnswer.cs" />
+    <Compile Remove="Services\FlashCardService.cs" />
   </ItemGroup>
 
   <ItemGroup>

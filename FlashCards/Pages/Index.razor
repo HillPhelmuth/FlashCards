@@ -2,146 +2,111 @@
 
 @inject FlashCardsDbService Database
 
-<h1>Flash Cards</h1>
+<h1 class="text-center">Flash Cards</h1>
+
 @if (!userAuth)
 {
-    <h2>Please Sign-in</h2>
+    <h2 class="text-center">Please Sign-in to Create FlashCard Decks</h2>
 }
 else
 {
-    <div class="row">
-        <div class="col">
-            <button class="btn btn-primary"
-                    @onclick="Reset">
-                Select or Create New Deck
-            </button>
-        </div>
-        <div class="col">
-            <button class="btn btn-primary"
-                    @onclick="ReviewCards">
-                Review a Deck
-            </button>
-        </div>
-    </div>
-    @if (!isAddCard)
-    {
-        @if (userHasDecks)
-        {
-            <p>Select Deck</p>
-            <MatSelect @bind-Value="deckName">
-                <MatOptionString></MatOptionString>
-                @foreach (var deck in UserDecks)
-                 {
-                    <MatOptionString Value="@deck.Name">
-                        <p>Name: @deck.Name </p>
-                        <p>Subject: @deck.Subject</p>
-                    </MatOptionString>
-                 }
-                
-
-            </MatSelect>
-            <button class="btn btn-primary" @onclick="SelectDeck">Select Deck</button>
-            <br />
-            <button class="btn btn-secondary" @onclick="@(() => addNewToggle = !addNewToggle)"> Or Add New Deck</button>
-        }
-        @if (addNewToggle)
-        {
-            <p>Create Deck</p>
-            <MatTextField @bind-Value="newDeck.Name" Label="Name"></MatTextField>
-            <br />
-            <MatTextField @bind-Value="newDeck.Subject" Label="Subject"></MatTextField>
-            <br />
-            <button class="btn btn-primary" @onclick="AddDeck">Add Deck</button>
-        }
-    }
-    @if (isSelectDeck)
-    {
-        <CascadingValue Value="selectedDeck">
-            <CascadingValue Value="UserDecks">
-                <Decks />
-            </CascadingValue>
-        </CascadingValue>
-    }
-    @if (isReview)
-    {
-        <CascadingValue Value="deckCards">
-            <CascadingValue Value="selectedDeck">
-                <CardReview />
-            </CascadingValue>
-        </CascadingValue>
-    }
+    <UserPage />
 }
 
 @code {
-    string temp1;
-    string temp2;
-    void OnTemp(KeyboardEventArgs args)
-    {
-        temp2 = $"You just pressed {args.Key}";
-    }
 
-    [Parameter]
-    public List<Deck> UserDecks { get; set; }
-    [Parameter]
-    public Deck selectedDeck { get; set; }
-    [Parameter]
-    public List<Card> deckCards { get; set; }
-    Deck newDeck = new Deck();
-    string deckName;
-    bool userAuth = false;
-    bool userHasDecks = false;
-    bool addNewToggle = false;
-    bool isAddCard = false;
-    bool isSelectDeck = false;
-    bool isReview = false;
-    protected override async Task OnInitializedAsync()
+    //[Parameter]
+    //public List<Deck> UserDecks { get; set; }
+    //[Parameter]
+    //public Deck selectedDeck { get; set; }
+    //[Parameter]
+    //public List<Card> deckCards { get; set; }
+    //protected Deck newDeck = new Deck();
+    //protected string deckName = "no deck selected";
+    //protected string deckDeleteMessage;
+    protected bool userAuth = false;
+    //protected bool userHasDecks = false;
+    //protected bool addNewToggle = false;
+    //protected bool isAddCard = false;
+    //protected bool isSelectDeck = false;
+    //protected bool isReview = false;
+    //protected bool panelOpenState;
+    protected override Task OnInitializedAsync()
     {
         userAuth = Database.HasUser;
-        UserDecks = await Database.GetUserDecks();
-        if (UserDecks.Count > 0)
-            userHasDecks = true;
-        else
-            addNewToggle = true;
+        return base.OnInitializedAsync();
+        //UserDecks = await Database.GetUserDecks();
+        //if (UserDecks.Count > 0)
+        //    userHasDecks = true;
+        //else
+        //    addNewToggle = true;
     }
-    async Task AddDeck()
-    {
-        if (UserDecks == null)
-            UserDecks = new List<Deck>();
-        UserDecks.Add(newDeck);
-        selectedDeck = newDeck;
+    //protected async Task AddDeck()
+    //{
+    //    if (UserDecks == null)
+    //        UserDecks = new List<Deck>();
+    //    UserDecks.Add(newDeck);
+    //    selectedDeck = newDeck;
 
-        await Database.AddDeck(newDeck.Name, newDeck.Subject);
-        isAddCard = true;
-        isSelectDeck = true;
-    }
-    async Task SelectDeck()
-    {
-        await Task.Run(() =>
-        {
-            selectedDeck = UserDecks.Where(x => x.Name == deckName).FirstOrDefault();
-            isAddCard = true;
-            isSelectDeck = true;
-        });
-        //StateHasChanged();
-    }
-    async Task ReviewCards()
-    {
-        deckCards = await Database.GetDeckCards(selectedDeck);
-        isAddCard = true;
-        isSelectDeck = false;
-        isReview = true;
+    //    await Database.AddDeck(newDeck.Name, newDeck.Subject);
+    //    isAddCard = true;
+    //    isSelectDeck = true;
+    //}
+    //protected async Task SelectDeck()
+    //{
+    //    selectedDeck = UserDecks.Where(x => x.Name == deckName).FirstOrDefault();
+    //    isAddCard = true;
+    //    deckCards = await Database.GetDeckCards(selectedDeck);
+    //    selectedDeck.Cards = deckCards;
+    //    isSelectDeck = true;
+    //    StateHasChanged();
+    //}
+    //protected async Task ReviewCards()
+    //{
+    //    if (selectedDeck == null)
+    //        return;
+    //    deckCards = await Database.GetDeckCards(selectedDeck);
+    //    isAddCard = true;
+    //    isSelectDeck = false;
+    //    isReview = true;
 
-    }
-    void Reset()
-    {
-        userHasDecks = false;
-        addNewToggle = false;
-        isAddCard = false;
-        isReview = false;
-        isSelectDeck = false;
-        if (UserDecks.Count > 0)
-            userHasDecks = true;
-        else
-            addNewToggle = true;
-    }
+    //}
+    //protected void Reset()
+    //{
+    //    userHasDecks = false;
+    //    addNewToggle = false;
+    //    isAddCard = false;
+    //    isReview = false;
+    //    isSelectDeck = false;
+    //    deckName = "no deck selected";
+    //    if (UserDecks.Count > 0)
+    //        userHasDecks = true;
+    //    else
+    //        addNewToggle = true;
+    //    StateHasChanged();
+    //}
+    //protected async Task DeleteDeck(Deck deck)
+    //{
+    //    if (deck.IsDeleteConfirm)
+    //    {
+    //        var cards = await Database.GetDeckCards(deck);
+    //        await Database.RemoveDeck(deck, cards);
+    //        UserDecks.Remove(deck);
+    //        deck.ConfirmDelete = "";
+    //        deck.CssConfirmClass = "";
+    //    }
+    //    else
+    //    {
+    //        deck.ConfirmDelete = "Delete this deck and all card contents, forever?";
+    //        deck.CssConfirmClass = "deckDelete zoom";
+    //    }
+    //    deck.IsDeleteConfirm = !deck.IsDeleteConfirm;
+    //    deckDeleteMessage = deck.ConfirmDelete;
+    //}
+    //protected void CardsChangeHandler(List<Card> cards)
+    //{
+    //    selectedDeck.Cards = cards.Distinct().ToList();
+    //    deckCards = cards.Distinct().ToList();
+    //    StateHasChanged();
+    //}
 }

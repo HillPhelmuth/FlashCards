@@ -11,15 +11,12 @@ namespace FlashCards.Extensions
         private static readonly Random rng = new Random();
         public static List<Card> AddAltAnswers(this List<Card> cards)
         {
-
             var answers = cards.Select(x => x.Answer).ToArray();
             foreach (var card in cards)
             {
                 int altAnswer;
-                if (card.DisplayAnswers == null)
-                    card.DisplayAnswers = new List<AnswerData>();
-
-
+                (card.DisplayAnswers ?? (card.DisplayAnswers = new List<AnswerData>())).Clear();
+                
                 for (int i = 0; i < 3; i++)
                 {
                     var altDisplayLoop = new AnswerData();
@@ -33,6 +30,7 @@ namespace FlashCards.Extensions
             }
             return cards;
         }
+        
         public static void Shuffle<T>(this IList<T> cards)
         {
             int n = cards.Count;

@@ -1,107 +1,51 @@
-﻿@inject FlashCardsDbService Database
+﻿@inherits CardReviewModel
 
-<div class="content">
-    <div class="col-3" style="background-color:lightblue; height:100%">
-        <p>Total cards: @cards.Count</p>
-        <p>Correct answers: @correctTotal</p>
-        <p>Wrong answers: @wrontTotal</p>
-        <br />
-        <button class="btn btn-primary" @onclick="GetNext">Get Next Card</button>
-        <br />
+    <div class="row">
+        @*<div class="col" style="background-color:lightblue; height:100%; width:17em">
+            <p>Total cards: @Cards.Count</p>
+            <p>Correct answers: @correctTotal</p>
+            <p>Wrong answers: @wrontTotal</p>
+            <br />
+            <button class="btn btn-primary" @onclick="GetNext">Get Next Card</button>
+            <br />
 
-    </div>
-    @if (isReady)
-    {
-        <div class="col">
-            <Animation Effect="@Effect.FlipInY" Enabled="enabled" OnAnimationEnd="CardAnimEnd">
-                <div class="flashCard mat-elevation-z24">
-                    <p style="margin:auto">@message</p>
-                    <MatList SingleSelection="true">
-                        <MatListItem Style="background-color:lightblue; font-size:1.6em; margin:auto"><p class="text-center" style="margin:auto"> @displayCard.Question </p></MatListItem>
-                        @foreach (var answer in Answers)
-                        {
-                            <Animation Effect="Effect.Hinge" Enabled="answer.IsIncorrect" Speed="Speed.Slow">
-                                <Animation Effect="Effect.Tada" Enabled="answer.IsCorrect" Speed="Speed.Slow">
-                                    <MatListItem Class="@answer.CssClass" @onclick="@(() => CheckAnswer(answer))">
-                                        <MatListItemText>@answer.Answer</MatListItemText>
-                                    </MatListItem>
+        </div>*@
+        @if (isReady)
+        {
+            <div class="col-2" style="background-color:lightblue">
+                <p>Total cards: @Cards.Count</p>
+                <p>Correct answers: @correctTotal</p>
+                <p>Wrong answers: @wrontTotal</p>
+                <br />
+                <button class="btn btn-primary" @onclick="GetNext">Get Next Card</button>
+                <br />
+
+            </div>
+            <div class="col">
+                <Animation Effect="@Effect.FlipInY" Enabled="enabled" OnAnimationEnd="CardAnimEnd">
+                    <div class="flashCard mat-elevation-z24">
+                        <p style="margin:auto">@message</p>
+                        <ul class="list-group-flush">
+                            <li style="background-color:lightblue; font-size:1.6em; margin:auto"><p class="text-center" style="margin:auto"> @DisplayCard.Question </p></li>
+                            @foreach (var answer in Answers)
+                            {
+                                <Animation Effect="Effect.Hinge" Enabled="answer.IsIncorrect" Speed="Speed.Slow">
+                                    <Animation Effect="Effect.Tada" Enabled="answer.IsCorrect" Speed="Speed.Slow">
+                                        <li class="@answer.CssClass" @onclick="@(() => CheckAnswer(answer))">
+                                            @answer.Answer.Replace("<strong>", "").Replace("</strong>", "--")
+                                            <span>
+
+                                            </span>
+                                        </li>
+                                    </Animation>
                                 </Animation>
-                            </Animation>
-                            <MatListDivider></MatListDivider>
-                        }
-                    </MatList>
-                </div>
-            </Animation>
-        </div>
-    }
-</div>
-
-@code {
-    [CascadingParameter]
-    Deck selectedDeck { get; set; }
-    [CascadingParameter]
-    List<Card> cards { get; set; }
-    Card displayCard;
-    List<AnswerData> Answers { get; set; }
-    List<string> answerList;
-
-    int trackNext = 1;
-    int correctTotal = 0;
-    int wrontTotal = 0;
-    string message;
-    string rightWrong;
-    string wrong;
-    bool enabled;
-    bool isReady;
-    protected override async Task OnInitializedAsync()
-    {
-        //cards = await Database.GetDeckCards(selectedDeck);
-
-        await Task.Run(() =>
-        {
-            cards = cards.AddAltAnswers();
-            cards.Shuffle();
-            isReady = true;
-            enabled = true;
-            displayCard = cards[0];
-            trackNext++;
-            Answers = displayCard.DisplayAnswers;
-            Answers.Shuffle();
-        });
-    }
-
-    void GetNext()
-    {
-        if (cards.Count <= trackNext)
-        {
-            return;
+                               
+                            }
+                        </ul>
+                    </div>
+                </Animation>
+            </div>
         }
-        enabled = true;
-        displayCard = cards[trackNext];
-        trackNext++;
-        Answers = displayCard.DisplayAnswers;
-        Answers.Shuffle();
-        StateHasChanged();
+    </div>
 
-    }
-    void CheckAnswer(AnswerData answer)
-    {
-        if (answer.Answer == displayCard.Answer)
-        {
-            answer.IsCorrect = true;
-            answer.IsIncorrect = false;
-            answer.CssClass = "correct";
-            correctTotal++;
-            StateHasChanged();
-            return;
-        }
-        answer.IsCorrect = false;
-        answer.IsIncorrect = true;
-        answer.CssClass = "wrong";
-        wrontTotal++;
-        StateHasChanged();
-    }
-    void CardAnimEnd() => enabled = false;
-    void WrongAnimEnd(AnswerData answer) => answer.IsIncorrect = !answer.IsIncorrect;
-    void CorrectAnimEnd(AnswerData answer) => answer.IsCorrect = !answer.IsCorrect;
-}
+   

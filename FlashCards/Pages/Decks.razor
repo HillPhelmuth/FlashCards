@@ -1,5 +1,4 @@
-﻿@inject FlashCardsDbService Database
-@inject WordsApiService WordsApi
+﻿@inherits DecksModel
 
 <div class="content">
 
@@ -7,10 +6,14 @@
     @if (!isVocab)
     {
         <h4>Add Standard Cards</h4>
-        <div class="col">
-            <MatTextField Style="width:50em" @bind-Value="question" TextArea="true" Label="Flashcard Question"></MatTextField><br />
-            <MatTextField Style="width:50em" @bind-Value="answer" TextArea="true" Label="Correct Answer"></MatTextField><br />
-
+        <div class="text-center card" style="width:32em; height:18em; border-radius:5px; border-width:2px; border-color:darkgray; margin:auto">
+            <div style="margin:auto">
+                <MatTextField Style="width:28em" @bind-Value="question" TextArea="true" Label="Flashcard Question"></MatTextField>
+            </div>
+            <MatListDivider></MatListDivider>
+            <div style="margin:auto">
+                <MatTextField Style="width:28em" @bind-Value="answer" TextArea="true" Label="Correct Answer"></MatTextField>
+            </div><br />
             <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to Deck</button>
         </div>
     }
@@ -20,6 +23,14 @@
         <div class="col">
             <MatTextField @bind-Value="wordSearch" @onkeyup="VocakKeyUp" Label="Vocab Word"></MatTextField>
             <button class="btn btn-primary" @onclick="CreateVocabCard">Add Vocab Card</button>
+            <br />
+            <button @onclick="@(() => CreateRandomVocabCards())" @onmousedown="ShowLoading">Add Many (random)</button><br />
+            @if (isLoading)
+            {
+                <p>adding cards...</p>
+                <MatProgressBar Indeterminate="true"></MatProgressBar>
+                <MatProgressBar Indeterminate="true" Reversed="true"></MatProgressBar>
+            }
         </div>
     }
 </div>
@@ -31,10 +42,19 @@
             @foreach (var card in selectedDeck.Cards)
             {
                 <div class="card smallCard mat-elevation-z24">
-                    <ul>
-                        <li><span style="font-size:1.3em">Question</span><br /> @card.Question</li>
+                    <div style="display:inline-block">
+                        <div class="confirmDelete">@card.ConfirmDelete</div>
+                        <div class="@card.CssConfirmClass" style="margin-left:17.2em">
+
+                            <MatIconButton Class="" Icon="delete" ToggleIcon="delete_forever" OnClick="@(() => DeleteCard(card))">
+                            </MatIconButton>
+                        </div>
+                    </div>
+                    <ul style="margin-left:-1em; margin-top:-.2em">
+                        <li><span style="font-size:1.3em">Question</span><br /> @card.Question.ToUpper()</li>
                         <li><span style="font-size:1.3em">Answer</span><br /> @((MarkupString)card.Answer)</li>
                     </ul>
+
                 </div>
             }
         </div>
@@ -42,68 +62,121 @@
 </div>
 @code {
 
-    [CascadingParameter]
-    Deck selectedDeck { get; set; }
-    [CascadingParameter]
-    List<Deck> UserDecks { get; set; }
-    [Parameter]
-    public List<Card> UserCards { get; set; }
-    [Parameter]
-    public EventCallback<List<Card>> UserCardsChanged { get; set; }
-    string question;
-    string answer;
-    string wordSearch;
-    string toggleLabel = "Standard Card";
-    bool isVocab = false;
-    protected override async Task OnInitializedAsync()
-    {
-        UserCards = await Database.GetDeckCards(selectedDeck);
-        if (selectedDeck.Cards == null)
-            selectedDeck.Cards = new List<Card>();
-        selectedDeck.Cards.AddRange(UserCards);
-        await UserCardsChanged.InvokeAsync(UserCards);
-    }
-    void ToggleVocab()
-    {
-        toggleLabel = toggleLabel == "Standard Card" ? "Vocabulary Card" : "Standard Card";
-    }
+    //[CascadingParameter]
+    //protected Deck selectedDeck { get; set; }
+    //[CascadingParameter]
+    //protected List<Deck> UserDecks { get; set; }
+    //[Parameter]
+    //public List<Card> UserCards { get; set; }
+    //[Parameter]
+    //public EventCallback<List<Card>> UserCardsChanged { get; set; }
+    //protected string question;
+    //protected string answer;
+    //protected string wordSearch;
+    //protected string toggleLabel = "Standard Card";
+    //protected string confirmMessage = "";
+    //protected string confirmCss = "";
+    //protected bool isVocab = false;
+    //protected bool deleteConfirm = false;
+    //protected bool isLoading = false;
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    UserCards = await Database.GetDeckCards(selectedDeck);
+    //    if (selectedDeck.Cards == null)
+    //        selectedDeck.Cards = new List<Card>();
+    //    selectedDeck.Cards.Distinct().ToList().AddRange(UserCards);
+    //    //await UserCardsChanged.InvokeAsync(UserCards);
+    //}
+    //protected void ToggleVocab()
+    //{
+    //    toggleLabel = toggleLabel == "Standard Card" ? "Vocabulary Card" : "Standard Card";
+    //}
 
-    async Task AddCardToDeck()
-    {
-        if (selectedDeck.Cards == null)
-            selectedDeck.Cards = new List<Card>();
-        var newCard = new Card() { Question = question, Answer = answer };
-        selectedDeck.Cards.Add(newCard);
-        await Database.AddCardToDeck(newCard, selectedDeck);
-        question = null;
-        answer = null;
+    //protected async Task AddCardToDeck()
+    //{
+    //    if (selectedDeck.Cards == null)
+    //        selectedDeck.Cards = new List<Card>();
+    //    var newCard = new Card() { Question = question, Answer = answer };
+    //    selectedDeck.Cards.Add(newCard);
+    //    await Database.AddCardToDeck(newCard, selectedDeck);
+    //    question = null;
+    //    answer = null;
 
-        await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
-        StateHasChanged();
-    }
-    async Task CreateVocabCard()
-    {
-        if (wordSearch == null)
-            return;
-        var definition = await WordsApi.GetDefinitions(wordSearch);
-        var firstDefinition = definition?.Definitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITONA FOUND" };
-        var newCard = new Card()
-        {
-            Question = wordSearch,
-            Answer = $"<strong>Definition:</strong> {firstDefinition.Definition} <p><strong>Part of Speech: </strong> {firstDefinition.PartOfSpeech} </p>"
-        };
-        if (selectedDeck.Cards == null)
-            selectedDeck.Cards = new List<Card>();
-        selectedDeck.Cards.Add(newCard);
-        await Database.AddCardToDeck(newCard, selectedDeck);
-        wordSearch = null;
-        StateHasChanged();
-    }
-    async Task VocakKeyUp(KeyboardEventArgs args)
-    {
-        if (args.Key == "Enter")
-        {
-            await CreateVocabCard();
-        }
-    }
+    //    await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
+    //    StateHasChanged();
+    //}
+    //protected async Task CreateVocabCard()
+    //{
+    //    if (wordSearch == null)
+    //        return;
+    //    var definition = await WordsApi.GetDefinitions(wordSearch);
+    //    var firstDefinition = definition?.Definitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITONA FOUND" };
+    //    var newCard = new Card()
+    //    {
+    //        Question = wordSearch,
+    //        Answer = $"<strong>Definition:</strong> {firstDefinition.Definition}"
+    //    };
+    //    if (selectedDeck.Cards == null)
+    //        selectedDeck.Cards = new List<Card>();
+    //    selectedDeck.Cards.Add(newCard);
+    //    await Database.AddCardToDeck(newCard, selectedDeck);
+    //    await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
+    //    wordSearch = null;
+    //    StateHasChanged();
+    //}
+    //protected async Task CreateRandomVocabCards(bool isMany = true)
+    //{
+
+    //    if (selectedDeck.Cards == null)
+    //        selectedDeck.Cards = new List<Card>();
+    //    var definitions = await WordsApi.GetDefinitions(isMany);
+    //    foreach (var definition in definitions)
+    //    {
+    //        var firstDefinition = definition?.RandomDefinitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITION FOUND" };
+    //        if (firstDefinition.Definition != "NO DEFINITION FOUND")
+    //        {
+    //            var newCard = new Card()
+    //            {
+    //                Question = definition.Word,
+    //                Answer = $"<strong>Definition:</strong> {firstDefinition.Definition}"
+    //            };
+    //            selectedDeck.Cards.Add(newCard);
+    //            await Database.AddCardToDeck(newCard, selectedDeck);
+    //        }
+    //    }
+    //    await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
+    //    wordSearch = null;
+    //    isLoading = false;
+    //    StateHasChanged();
+    //}
+    //protected void ShowLoading(MouseEventArgs args)
+    //{
+    //    isLoading = true;
+    //    StateHasChanged();
+    //}
+
+    //protected async Task VocakKeyUp(KeyboardEventArgs args)
+    //{
+    //    if (args.Key == "Enter")
+    //    {
+    //        await CreateVocabCard();
+    //    }
+    //}
+    //protected async Task DeleteCard(Card card)
+    //{
+    //    if (card.IsDeleteConfirm)
+    //    {
+    //        await Database.RemoveCardFromDeck(card);
+    //        selectedDeck.Cards.Remove(card);
+    //        card.ConfirmDelete = "";
+    //        card.CssConfirmClass = "";
+    //    }
+    //    else
+    //    {
+    //        card.ConfirmDelete = "Delete forever?";
+    //        card.CssConfirmClass = "wrong";
+    //    }
+    //    card.IsDeleteConfirm = !card.IsDeleteConfirm;
+    //    StateHasChanged();
+    //}
 }

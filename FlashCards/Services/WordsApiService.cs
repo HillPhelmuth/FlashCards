@@ -14,9 +14,9 @@ namespace FlashCards.Services
 {
     public class WordsApiService
     {
-        private string _apiKey;
-        private IConfiguration _configuration;
-
+        private readonly string _apiKey;
+        private readonly IConfiguration _configuration;
+        private const string randomString = "?random=true";
         public WordsApiService(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -26,34 +26,38 @@ namespace FlashCards.Services
         [HttpGet]
         public async Task<DefinitionModel> GetDefinitions(string word)
         {
-            DefinitionModel result = new DefinitionModel();
-            var client = new RestClient($"https://wordsapiv1.p.rapidapi.com/words/{word}/definitions");
+            string requestString = $"{word}/definitions";
+            DefinitionModel result = RequestWordsApi(requestString);
+            return await Task.FromResult(result);
+        }
+
+        [HttpGet]
+        public async Task<List<DefinitionModel>> GetDefinitions(bool isMany)
+        {
+            int loops = isMany ? 10 : 1;
+            var resultList = new List<DefinitionModel>();
+            const string requestString = randomString;
+            for (int i = 0; i < loops; i++)
+            {
+                var result = RequestWordsApi(requestString);
+                resultList.Add(result);
+            }
+            return await Task.FromResult(resultList);
+        }
+        private DefinitionModel RequestWordsApi(string requestString)
+        {
+            var client = new RestClient($"https://wordsapiv1.p.rapidapi.com/words/{requestString}");
+            RestRequest request = CreateWordsApiRestRequest();
+            IRestResponse response = client.Execute(request);
+            return JsonConvert.DeserializeObject<DefinitionModel>(response.Content);
+        }
+
+        private RestRequest CreateWordsApiRestRequest()
+        {
             var request = new RestRequest(Method.GET);
             request.AddHeader("x-rapidapi-host", "wordsapiv1.p.rapidapi.com");
             request.AddHeader("x-rapidapi-key", _apiKey);
-            IRestResponse response = client.Execute(request);
-            result = JsonConvert.DeserializeObject<DefinitionModel>(response.Content);
-            return await Task.FromResult(result);
+            return request;
         }
     }
-    //public class JsonNetSerializer : IRestSerializer
-    //{
-    //    public string Serialize(object obj) =>
-    //        JsonConvert.SerializeObject(obj);
-
-    //    public string Serialize(Parameter parameter) =>
-    //        JsonConvert.SerializeObject(parameter.Value);
-
-    //    public T Deserialize<T>(IRestResponse response) =>
-    //        JsonConvert.DeserializeObject<T>(response.Content);
-
-    //    public string[] SupportedContentTypes { get; } =
-    //    {
-    //        "application/json", "text/json", "text/x-json", "text/javascript", "*+json"
-    //    };
-
-    //    public string ContentType { get; set; } = "application/json";
-
-    //    public DataFormat DataFormat { get; } = DataFormat.Json;
-    //}
 }

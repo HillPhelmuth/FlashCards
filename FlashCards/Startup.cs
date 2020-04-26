@@ -43,7 +43,7 @@ namespace FlashCards
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddScoped<FlashCardsDbService>();
+            services.AddTransient<FlashCardsDbService>();
             services.AddScoped<WordsApiService>();
             
         }

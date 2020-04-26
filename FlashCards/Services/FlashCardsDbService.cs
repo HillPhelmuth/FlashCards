@@ -34,7 +34,7 @@ namespace FlashCards.Services
             var userId = UserId;
             var deck = new Deck() { Name = deckname, User_ID = userId, Subject = subject };
             var context = _context;
-            var userDeck = context.DecksTable.ToList().Where(x => x.Name == deckname && x.User_ID == userId).FirstOrDefault();
+            var userDeck = context.DecksTable.ToList().FirstOrDefault(x => x.Name == deckname && x.User_ID == userId);
             if (userDeck != deck)
             {
                 await context.AddAsync(deck);
@@ -89,6 +89,28 @@ namespace FlashCards.Services
                 cardToUpdate = card;
                 await context.SaveChangesAsync();
             }
+        }
+        [HttpDelete]
+        public async Task RemoveCardFromDeck(Card card)
+        {
+            var context = _context;
+            context.Attach(card);
+            context.Remove(card);
+            await context.SaveChangesAsync();
+        }
+        [HttpDelete]
+        public async Task RemoveDeck(Deck deck, List<Card> cards)
+        {
+            var context = _context;
+            var matchedCards = cards.Where(x => x.Decks_ID == deck.ID);
+            foreach (var card in matchedCards)
+            {
+                context.Attach(card);
+                context.Remove(card);
+            }
+            context.Attach(deck);
+            context.Remove(deck);
+            await context.SaveChangesAsync();
         }
     }
 }

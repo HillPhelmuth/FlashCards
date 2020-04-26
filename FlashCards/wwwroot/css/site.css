@@ -183,16 +183,40 @@ app {
 }
 
 .flashCard {
-    width: 32em;
+    width: 40em;
     height: 24em;
     flex: none;
     border: 3px solid #000000;
-    padding: 1em;
-    margin: .5em;
-    background-color: lightgray;
-    font-size: 175%;
+    padding: .5em;
+    padding-top: .3em;
+    margin: 1em;
+    background-color: lightgray;    
 }
-    /*.flashCard:hover {
+
+    .flashCard ul {
+        list-style-type: none;
+        padding-left:.1em;
+    }
+    .flashCard li {
+        font-size: 1em;
+        overflow-wrap: break-word;
+        margin-bottom: .8em;
+        margin-top:auto;
+        padding-bottom: .2em;
+        word-wrap: hyphenate;
+        height: auto;
+        text-align:left;       
+        border-bottom-width:2px;
+        border-color:black;
+        justify-content:left;
+    }
+    .flashCard li:hover {
+        transform: scale(1.05, 1.05);
+        cursor:pointer;
+        background-color:white;
+        color:black;
+    }
+/*.flashCard:hover {
         transform: scale(1.2, 1.2);
         cursor: pointer;
         -webkit-transition: transform 1s ease;
@@ -203,16 +227,17 @@ app {
     }*/
 .smallCard {
     width: 21em;
-    height: 16em;
+    height: 19em;
     flex: none;
     border: 3px solid #000000;
     padding: 1em;
+    padding-top: .5em;
     margin: .5em;
     background-color: lightgray;
-    
 }
+
     .smallCard:hover {
-        transform: scale(1.2, 1.2);
+        transform: scale(1.1, 1.1);
         cursor: pointer;
         -webkit-transition: transform 1s ease;
         -moz-transition: transform 1s ease;
@@ -228,21 +253,83 @@ app {
     -webkit-column-gap: .25rem;
     -moz-column-gap: .25rem;
     column-gap: .05em;
-    column
-    margin-top:2em;
+    margin-top: 2em;
     orphans: 1;
     widows: 1;
-    column-width:23em;
-    
+    column-width: 23em;
 }
 
     .card-columns-four .card {
         display: inline-block;
         width: 100%
     }
+
 .wrong {
-    background-color:red;
+    background-color: lightcoral;
+    color: darkred
 }
+
 .correct {
-    background-color:green;
+    background-color: green;
+}
+
+.confirmDelete {
+    margin: auto;
+    font-size: 1.2em;
+    padding-top: .3em;
+    position: absolute;
+    color: darkred;
+    font-weight: 600
+}
+
+.PanelToggle {
+    height: 2em;
+    width: 20em;
+    background-color: lightgray;
+    color: blue;
+    font-size: 1.5em;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+}
+
+    .PanelToggle .mid {
+        margin: auto
+    }
+
+    .PanelToggle .right {
+        margin-left: auto
+    }
+
+.deckDelete {
+    animation: blink 1s linear infinite;
+    transform: scale3d(1.2, 1.2, 1.2);
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.zoom:hover {
+    transform: scale(1.2, 1.2);
+    cursor: pointer;
+    -webkit-transition: transform 1s ease;
+    -moz-transition: transform 1s ease;
+    -o-transition: transform 1s ease;
+    transition: transform 1s ease;
 }

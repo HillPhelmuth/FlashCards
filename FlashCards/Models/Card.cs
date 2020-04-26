@@ -8,14 +8,12 @@ namespace FlashCards.Models
 {
     [Serializable]
     [Table("Cards")]
-    public class Card
+    public class Card : CardDeckBase
     {
         public int ID { get; set; }
         public int Decks_ID { get; set; }
         public string Question { get; set; }
         public string Answer { get; set; }
-        [NotMapped]
-        public List<string> AltAnswers { get; set; }
         [NotMapped]
         public List<AnswerData> DisplayAnswers { get; set; }
         
