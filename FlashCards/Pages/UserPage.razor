@@ -58,22 +58,20 @@
 {
     <div class="text-center">
         <TabControl>
-
-            <CascadingValue Value="selectedDeck">
+            <CascadingValue Value="SelectedDeck">
                 <CascadingValue Value="UserDecks">
-                    <TabPage Text="Deck Builder">
-                        <Decks UserCardsChanged="CardsChangeHandler" />
+                    <TabPage Text="Deck Builder" Size="large">
+                        <Decks UserDeckChanged="DeckChangeHandler" UserCardsChanged="CardsChangeHandler" />
                     </TabPage>
                 </CascadingValue>
             </CascadingValue>
-
-            <CascadingValue Value="deckCards">
-                <CascadingValue Value="selectedDeck">
-                    <TabPage Text="Quiz Page">
+            <CascadingValue Value="DeckCards">
+                <CascadingValue Value="SelectedDeck">
+                    <TabPage Text="Test Flashcards" Size="large">
                         <CardReview />
                     </TabPage>
                 </CascadingValue>
-            </CascadingValue>
+            </CascadingValue>            
         </TabControl>
     </div>
 }

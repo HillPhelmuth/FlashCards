@@ -1,15 +1,7 @@
 ﻿@inherits CardReviewModel
 
     <div class="row">
-        @*<div class="col" style="background-color:lightblue; height:100%; width:17em">
-            <p>Total cards: @Cards.Count</p>
-            <p>Correct answers: @correctTotal</p>
-            <p>Wrong answers: @wrontTotal</p>
-            <br />
-            <button class="btn btn-primary" @onclick="GetNext">Get Next Card</button>
-            <br />
-
-        </div>*@
+       
         @if (isReady)
         {
             <div class="col-2" style="background-color:lightblue">
@@ -33,9 +25,6 @@
                                     <Animation Effect="Effect.Tada" Enabled="answer.IsCorrect" Speed="Speed.Slow">
                                         <li class="@answer.CssClass" @onclick="@(() => CheckAnswer(answer))">
                                             @answer.Answer.Replace("<strong>", "").Replace("</strong>", "--")
-                                            <span>
-
-                                            </span>
                                         </li>
                                     </Animation>
                                 </Animation>

@@ -8,105 +8,60 @@
 {
     <h2 class="text-center">Please Sign-in to Create FlashCard Decks</h2>
 }
+else if (userAuth && !isUserReady)
+{
+    <div class="text-center">
+        <div class="text-center">
+            <ol style="margin-left:auto; margin-right:auto; font-size:1.4em">
+                <li>Create <strong>flash cards</strong> to help you study</li>
+                <li>Review your own flashcards in a quiz format to <strong>test your progress</strong></li>
+                <li>
+                    Take a section of a <strong>practice exam</strong> from the language section of old
+                    <strong>Standarized tests</strong> from elementary school through college entrance exams
+                    and beyond!
+                </li>
+            </ol>
+        </div>
+        <button class="btn btn-primary" style="margin-left:auto; margin-right:auto" @onclick="@(() => isUserReady = !isUserReady)">
+            Start studying!
+        </button>
+    </div>
+}
 else
 {
-    <UserPage />
+    <div class="text-center" style="margin-left:auto; margin-right:auto">
+        <TabControl>
+            <TabPage Text="Create and use flashcards to study" Size="large">
+                <UserPage />
+            </TabPage>
+            <TabPage Text="Test your knowledge with a pre-made quiz" Size="large">
+                <MatThemeProvider Theme="theme">
+                    <WordQuiz />
+                </MatThemeProvider>
+            </TabPage>
+        </TabControl>
+    </div>
 }
 
 @code {
 
-    //[Parameter]
-    //public List<Deck> UserDecks { get; set; }
-    //[Parameter]
-    //public Deck selectedDeck { get; set; }
-    //[Parameter]
-    //public List<Card> deckCards { get; set; }
-    //protected Deck newDeck = new Deck();
-    //protected string deckName = "no deck selected";
-    //protected string deckDeleteMessage;
+
     protected bool userAuth = false;
-    //protected bool userHasDecks = false;
-    //protected bool addNewToggle = false;
-    //protected bool isAddCard = false;
-    //protected bool isSelectDeck = false;
-    //protected bool isReview = false;
-    //protected bool panelOpenState;
+    protected bool isUserReady = false;
+    public MatTheme theme = new MatTheme()
+    {
+        Primary = MatThemeColors.Orange._500.Value,
+        Secondary = MatThemeColors.Blue._800.Value,
+        Background = MatThemeColors.LightBlue._300.Value,
+        OnSurface = MatThemeColors.Amber._200.Value,
+        Surface = MatThemeColors.BlueGrey._300.Value
+    };
+
     protected override Task OnInitializedAsync()
     {
         userAuth = Database.HasUser;
         return base.OnInitializedAsync();
-        //UserDecks = await Database.GetUserDecks();
-        //if (UserDecks.Count > 0)
-        //    userHasDecks = true;
-        //else
-        //    addNewToggle = true;
+
     }
-    //protected async Task AddDeck()
-    //{
-    //    if (UserDecks == null)
-    //        UserDecks = new List<Deck>();
-    //    UserDecks.Add(newDeck);
-    //    selectedDeck = newDeck;
 
-    //    await Database.AddDeck(newDeck.Name, newDeck.Subject);
-    //    isAddCard = true;
-    //    isSelectDeck = true;
-    //}
-    //protected async Task SelectDeck()
-    //{
-    //    selectedDeck = UserDecks.Where(x => x.Name == deckName).FirstOrDefault();
-    //    isAddCard = true;
-    //    deckCards = await Database.GetDeckCards(selectedDeck);
-    //    selectedDeck.Cards = deckCards;
-    //    isSelectDeck = true;
-    //    StateHasChanged();
-    //}
-    //protected async Task ReviewCards()
-    //{
-    //    if (selectedDeck == null)
-    //        return;
-    //    deckCards = await Database.GetDeckCards(selectedDeck);
-    //    isAddCard = true;
-    //    isSelectDeck = false;
-    //    isReview = true;
-
-    //}
-    //protected void Reset()
-    //{
-    //    userHasDecks = false;
-    //    addNewToggle = false;
-    //    isAddCard = false;
-    //    isReview = false;
-    //    isSelectDeck = false;
-    //    deckName = "no deck selected";
-    //    if (UserDecks.Count > 0)
-    //        userHasDecks = true;
-    //    else
-    //        addNewToggle = true;
-    //    StateHasChanged();
-    //}
-    //protected async Task DeleteDeck(Deck deck)
-    //{
-    //    if (deck.IsDeleteConfirm)
-    //    {
-    //        var cards = await Database.GetDeckCards(deck);
-    //        await Database.RemoveDeck(deck, cards);
-    //        UserDecks.Remove(deck);
-    //        deck.ConfirmDelete = "";
-    //        deck.CssConfirmClass = "";
-    //    }
-    //    else
-    //    {
-    //        deck.ConfirmDelete = "Delete this deck and all card contents, forever?";
-    //        deck.CssConfirmClass = "deckDelete zoom";
-    //    }
-    //    deck.IsDeleteConfirm = !deck.IsDeleteConfirm;
-    //    deckDeleteMessage = deck.ConfirmDelete;
-    //}
-    //protected void CardsChangeHandler(List<Card> cards)
-    //{
-    //    selectedDeck.Cards = cards.Distinct().ToList();
-    //    deckCards = cards.Distinct().ToList();
-    //    StateHasChanged();
-    //}
 }

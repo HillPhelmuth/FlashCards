@@ -1,9 +1,8 @@
 ﻿
-<div class="btn-group" role="group">
+<div class="" role="group" style="display:inline-block">
     @foreach (TabPage tabPage in Pages)
     {
-        <button style="margin-left:1em; margin-right:1em" type="button"
-                class="btn @GetButtonClass(tabPage)"
+        <button class="tab @GetButtonClass(tabPage)"
                 @onclick=@( () => ActivatePage(tabPage) )>
             @tabPage.Text
         </button>
@@ -27,6 +26,10 @@
     }
     string GetButtonClass(TabPage page)
     {
+        if (page.Size == "small")
+            return page == ActivePage ? "smallTab-active" : "smallTab-inactive";
+        if (page.Size == "large")
+            return page == ActivePage ? "largeTab-active" : "largeTab-inactive";
         return page == ActivePage ? "btn-primary" : "btn-secondary";
     }
     void ActivatePage(TabPage page)

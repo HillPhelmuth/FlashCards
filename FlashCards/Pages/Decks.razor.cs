@@ -1,4 +1,5 @@
-﻿using FlashCards.Models;
+﻿using FlashCards.Interfaces;
+using FlashCards.Models;
 using FlashCards.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -14,16 +15,18 @@ namespace FlashCards.Pages
         [Inject]
         protected FlashCardsDbService Database { get; set; }
         [Inject]
-        protected WordsApiService WordsApi { get; set; }
+        protected IWordsApiService WordsApi { get; set; }
 
         [CascadingParameter]
-        protected Deck selectedDeck { get; set; }
+        protected Deck SelectedDeck { get; set; }
         [CascadingParameter]
         protected List<Deck> UserDecks { get; set; }
         [Parameter]
         public List<Card> UserCards { get; set; }
         [Parameter]
         public EventCallback<List<Card>> UserCardsChanged { get; set; }
+        [Parameter]
+        public EventCallback<Deck> UserDeckChanged { get; set; }
 
         protected string question;
         protected string answer;
@@ -36,11 +39,10 @@ namespace FlashCards.Pages
         protected bool isLoading = false;
         protected override async Task OnInitializedAsync()
         {
-            UserCards = await Database.GetDeckCards(selectedDeck);
-            if (selectedDeck.Cards == null)
-                selectedDeck.Cards = new List<Card>();
-            selectedDeck.Cards.Distinct().ToList().AddRange(UserCards);
-            //await UserCardsChanged.InvokeAsync(UserCards);
+            UserCards = await Database.GetDeckCards(SelectedDeck);
+            if (SelectedDeck.Cards == null)
+                SelectedDeck.Cards = new List<Card>();
+            SelectedDeck.Cards.Distinct().ToList().AddRange(UserCards);
         }
         protected void ToggleVocab()
         {
@@ -49,15 +51,14 @@ namespace FlashCards.Pages
 
         protected async Task AddCardToDeck()
         {
-            if (selectedDeck.Cards == null)
-                selectedDeck.Cards = new List<Card>();
+            if (SelectedDeck.Cards == null)
+                SelectedDeck.Cards = new List<Card>();
             var newCard = new Card() { Question = question, Answer = answer };
-            selectedDeck.Cards.Add(newCard);
-            await Database.AddCardToDeck(newCard, selectedDeck);
+            SelectedDeck.Cards.Add(newCard);
+            await Database.AddCardToDeck(newCard, SelectedDeck);
             question = null;
             answer = null;
-
-            await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
+            await TriggerCallbacks();
             StateHasChanged();
         }
         protected async Task CreateVocabCard()
@@ -65,49 +66,53 @@ namespace FlashCards.Pages
             if (wordSearch == null)
                 return;
             var definition = await WordsApi.GetDefinitions(wordSearch);
-            var firstDefinition = definition?.Definitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITONA FOUND" };
-            var newCard = new Card()
-            {
-                Question = wordSearch,
-                Answer = $"Definition: {firstDefinition.Definition}"
-            };
-            (selectedDeck.Cards ?? (selectedDeck.Cards = new List<Card>())).Add(newCard);
-            await Database.AddCardToDeck(newCard, selectedDeck);
-            await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
+            var firstDefinition = definition?.Definitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITION FOUND" };
+            await CreateVocabCard(definition, firstDefinition);
+            await TriggerCallbacks();
             wordSearch = null;
             StateHasChanged();
         }
         protected async Task CreateRandomVocabCards(bool isMany = true)
         {
-
-            
             var definitions = await WordsApi.GetDefinitions(isMany);
             foreach (var definition in definitions)
             {
                 var firstDefinition = definition?.RandomDefinitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITION FOUND" };
-                if (firstDefinition.Definition != "NO DEFINITION FOUND")
-                {
-                    var newCard = new Card()
-                    {
-                        Question = definition.Word,
-                        Answer = $"<strong>Definition:</strong> {firstDefinition.Definition}"
-                    };
-                    (selectedDeck.Cards ?? (selectedDeck.Cards = new List<Card>())).Add(newCard);
-                    await Database.AddCardToDeck(newCard, selectedDeck);
-                }
+                await CreateVocabCard(definition, firstDefinition);
             }
-            await UserCardsChanged.InvokeAsync(selectedDeck.Cards);
+            await TriggerCallbacks();
             wordSearch = null;
             isLoading = false;
             StateHasChanged();
         }
+
+        private async Task CreateVocabCard(DefinitionModel definition, DefinitionData firstDefinition)
+        {
+            if (firstDefinition.Definition != "NO DEFINITION FOUND")
+            {
+                var newCard = new Card()
+                {
+                    Question = definition.Word,
+                    Answer = $"Definition -- {firstDefinition.Definition}"
+                };
+                (SelectedDeck.Cards ?? (SelectedDeck.Cards = new List<Card>())).Add(newCard);
+                await Database.AddCardToDeck(newCard, SelectedDeck);
+            }
+        }
+
+        private async Task TriggerCallbacks()
+        {
+            await UserCardsChanged.InvokeAsync(SelectedDeck.Cards);
+            await UserDeckChanged.InvokeAsync(SelectedDeck);
+        }
+
         protected void ShowLoading(MouseEventArgs args)
         {
             isLoading = true;
             StateHasChanged();
         }
 
-        protected async Task VocakKeyUp(KeyboardEventArgs args)
+        protected async Task VocabKeyUp(KeyboardEventArgs args)
         {
             if (args.Key == "Enter")
             {
@@ -119,7 +124,7 @@ namespace FlashCards.Pages
             if (card.IsDeleteConfirm)
             {
                 await Database.RemoveCardFromDeck(card);
-                selectedDeck.Cards.Remove(card);
+                SelectedDeck.Cards.Remove(card);
                 card.ConfirmDelete = "";
                 card.CssConfirmClass = "";
             }

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using FlashCards.Areas.Identity;
 using FlashCards.Data;
 using FlashCards.Services;
+using FlashCards.Interfaces;
 
 namespace FlashCards
 {
@@ -44,7 +45,8 @@ namespace FlashCards
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddTransient<FlashCardsDbService>();
-            services.AddScoped<WordsApiService>();
+            services.AddScoped<IWordsApiService, WordsApiService>();
+            services.AddScoped<IWordQuizService, WordQuizService>();
             services.AddSignalR().AddAzureSignalR(options =>
             {
                 options.ServerStickyMode =

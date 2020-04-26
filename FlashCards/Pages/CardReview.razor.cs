@@ -29,13 +29,11 @@ namespace FlashCards.Pages
 
         protected override Task OnInitializedAsync()
         {
-            //Cards = await Database.GetDeckCards(SelectedDeck);
             Cards = Cards.AddAltAnswers();
             Cards.Shuffle();
             isReady = true;
             enabled = true;
             DisplayCard = Cards[0];
-            //trackNext++;
             Answers = DisplayCard.DisplayAnswers;
             Answers.Shuffle();
             return base.OnInitializedAsync();

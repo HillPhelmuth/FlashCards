@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlashCards.Services;
 using FlashCards.Models;
 using FlashCards.Extensions;
+using MatBlazor;
 
 namespace FlashCards.Pages
 {
@@ -16,9 +17,9 @@ namespace FlashCards.Pages
         [Parameter]
         public List<Deck> UserDecks { get; set; }
         [Parameter]
-        public Deck selectedDeck { get; set; }
+        public Deck SelectedDeck { get; set; }
         [Parameter]
-        public List<Card> deckCards { get; set; }
+        public List<Card> DeckCards { get; set; }
         protected Deck newDeck = new Deck();
         protected string deckName = "no deck selected";
         protected string deckDeleteMessage;
@@ -28,8 +29,10 @@ namespace FlashCards.Pages
         protected bool isSelectDeck = false;
         protected bool isReview = false;
         protected bool panelOpenState;
+
+        
         protected override async Task OnInitializedAsync()
-        {
+        {            
             UserDecks = await Database.GetUserDecks();
             if (UserDecks.Count > 0)
                 userHasDecks = true;
@@ -41,7 +44,7 @@ namespace FlashCards.Pages
             if (UserDecks == null)
                 UserDecks = new List<Deck>();
             UserDecks.Add(newDeck);
-            selectedDeck = newDeck;
+            SelectedDeck = newDeck;
 
             await Database.AddDeck(newDeck.Name, newDeck.Subject);
             isAddCard = true;
@@ -49,18 +52,18 @@ namespace FlashCards.Pages
         }
         protected async Task SelectDeck()
         {
-            selectedDeck = UserDecks.Where(x => x.Name == deckName).FirstOrDefault();
+            SelectedDeck = UserDecks.Where(x => x.Name == deckName).FirstOrDefault();
             isAddCard = true;
-            deckCards = await Database.GetDeckCards(selectedDeck);
-            selectedDeck.Cards = deckCards;
+            DeckCards = await Database.GetDeckCards(SelectedDeck);
+            SelectedDeck.Cards = DeckCards;
             isSelectDeck = true;
             StateHasChanged();
         }
         protected async Task ReviewCards()
         {
-            if (selectedDeck == null)
+            if (SelectedDeck == null)
                 return;
-            deckCards = await Database.GetDeckCards(selectedDeck);
+            DeckCards = await Database.GetDeckCards(SelectedDeck);
             isAddCard = true;
             isSelectDeck = false;
             isReview = true;
@@ -100,8 +103,13 @@ namespace FlashCards.Pages
         }
         protected void CardsChangeHandler(List<Card> cards)
         {
-            selectedDeck.Cards = cards.Distinct().ToList();
-            deckCards = cards.Distinct().ToList();
+            SelectedDeck.Cards = cards.Distinct().ToList();
+            DeckCards = cards.Distinct().ToList();
+            StateHasChanged();
+        }
+        protected void DeckChangeHandler(Deck deck)
+        {
+            SelectedDeck = deck;
             StateHasChanged();
         }
     }

@@ -34,7 +34,7 @@ namespace FlashCards.Services
             var userId = UserId;
             var deck = new Deck() { Name = deckname, User_ID = userId, Subject = subject };
             var context = _context;
-            var userDeck = context.DecksTable.ToList().FirstOrDefault(x => x.Name == deckname && x.User_ID == userId);
+            var userDeck = context.DecksTable.ToList().Find(x => x.Name == deckname && x.User_ID == userId);
             if (userDeck != deck)
             {
                 await context.AddAsync(deck);
@@ -62,15 +62,16 @@ namespace FlashCards.Services
             if (card.ID > 0)
                 return;
             var context = _context;
-            
+
             // Match name and user_id to find stored DecksTable primary key
             card.Decks_ID = context.DecksTable
                 .Where(x => x.User_ID == UserId && x.Name == deck.Name)
                 .Select(x => x.ID).FirstOrDefault();
-            if (_context.CardsTable.Where(x => x.Question == card.Question && x.Decks_ID == card.Decks_ID).Any())
-                return;
-            await context.AddAsync(card);
-            await context.SaveChangesAsync();
+            if (!_context.CardsTable.Any(x => x.Question == card.Question && x.Decks_ID == card.Decks_ID))
+            {
+                await context.AddAsync(card);
+                await context.SaveChangesAsync();
+            }
         }
         [HttpGet]
         public async Task<List<Card>> GetDeckCards(Deck deck)

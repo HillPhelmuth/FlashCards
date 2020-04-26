@@ -5,14 +5,15 @@ using System.Threading.Tasks;
 using FlashCards.Models;
 using Microsoft.AspNetCore.Mvc;
 using RestSharp;
-using RestSharp.Serializers.Newtonsoft;
 using Newtonsoft.Json;
 using RestSharp.Serialization;
 using Microsoft.Extensions.Configuration;
+using FlashCards.Interfaces;
 
 namespace FlashCards.Services
 {
-    public class WordsApiService
+    
+    public class WordsApiService : IWordsApiService
     {
         private readonly string _apiKey;
         private readonly IConfiguration _configuration;

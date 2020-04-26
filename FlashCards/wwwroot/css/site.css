@@ -213,8 +213,7 @@ app {
     .flashCard li:hover {
         transform: scale(1.05, 1.05);
         cursor:pointer;
-        background-color:white;
-        color:black;
+        color:darkblue
     }
 /*.flashCard:hover {
         transform: scale(1.2, 1.2);
@@ -271,6 +270,47 @@ app {
 
 .correct {
     background-color: green;
+}
+.tab {
+    display: inline-block;
+    font-weight: 400;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    /*transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;*/
+}
+.largeTab-active {
+    background-color: darkgreen;
+    height: 3.5em;
+    
+}
+.largeTab-inactive {
+    background-color: lightblue;
+    height:3.2em;
+    color:black    
+}
+
+.smallTab-active {
+    background-color:darkviolet;
+    height:30px;
+    font-size:80%;
+}
+.smallTab-inactive {
+    background-color: lightpink;
+    height: 28px;
+    font-size: 80%;
+    color:black
 }
 
 .confirmDelete {

@@ -1,0 +1,77 @@
+﻿@inherits WordQuizModel
+<div style="margin-left:auto">
+    @if (QuizData != null)
+    {
+        <p>Area: @QuizData.Area.ExpandDescription()</p>
+        <p>Level: @QuizData.Level</p>
+    }
+    Correct: @correctCount
+    Incorrect: @incorrectCount
+</div>
+<h1 class="text-center" style="color:darkblue; background-color:lightgreen">@gameoverMessage</h1>
+@if (!isQuizReady)
+{
+    <h3>Select a study area and difficulty level</h3>
+    <div class="mat-layout-grid" style="min-height:20em; width:45em; margin-left:auto; margin-right:auto">
+        <div class="mat-layout-grid-inner" style="min-height:16em">
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-align-top">
+                <MatSelect @bind-Value="QuizArea" Label="Study Area">
+                    <MatOptionString></MatOptionString>
+                    <MatOptionString Value="es">Elementary School</MatOptionString>
+                    <MatOptionString Value="ms">Middle School</MatOptionString>
+                    <MatOptionString Value="hs">High School</MatOptionString>
+                    <MatOptionString Value="sat">College Prep (e.g. SAT)</MatOptionString>
+                    <MatOptionString Value="gre">Grad School Prep (GRE)</MatOptionString>
+                    <MatOptionString Value="gmat">MBA Prep (GMAT)</MatOptionString>
+                    <MatOptionString Value="overall">overall</MatOptionString>
+                </MatSelect>
+            </div>
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-align-bottom mat-layout-grid-cell-span-2">
+                <button class="btn btn-primary" @onclick="GetWordQuiz">Get Quiz</button>
+            </div>
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-align-top">
+                <MatSelect @bind-Value="QuizLevel" Label="Difficulty Level">
+                    <MatOption TValue="int" Value="0"></MatOption>
+                    <MatOption TValue="int" Value="1">1</MatOption>
+                    <MatOption TValue="int" Value="2">2</MatOption>
+                    <MatOption TValue="int" Value="3">3</MatOption>
+                    <MatOption TValue="int" Value="4">4</MatOption>
+                    <MatOption TValue="int" Value="5">5</MatOption>
+                    <MatOption TValue="int" Value="6">6</MatOption>
+                    <MatOption TValue="int" Value="7">7</MatOption>
+                    <MatOption TValue="int" Value="8">8</MatOption>
+                    <MatOption TValue="int" Value="9">9</MatOption>
+                    <MatOption TValue="int" Value="10">10</MatOption>
+                </MatSelect>
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+<Animation Effect="Effect.FlipInY" Enabled="isZoomDown" IterationCount="1" OnAnimationEnd="EnterTop">
+    <div class="mat-layout-grid" style="border-width:3px; border-color:darkblue">
+        <div class="mat-layout-grid-inner" style="min-height:20em; width:45em; margin-left:auto; margin-right:auto">           
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3 mat-layout-grid-cell-align-middle">
+                <MatButton Style="font-size:1.5em" Icon="looks_one" Value="1" OnClick="@(() => EvaluateAnswer(1))">@CurrentQuiz.Option[0]</MatButton>
+            </div>            
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6 mat-layout-grid-cell-align-top">
+                <h4>Which answer is most closely associated with the words below?</h4><br />
+                <ol style="line-height:2em; font-size:1.4em">
+                    @foreach (var option in CurrentQuiz.Quiz)
+                    {
+                        <li>@option.ToUpper()</li>
+                    }
+                </ol>
+            </div>            
+            <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3 mat-layout-grid-cell-align-middle">
+                <MatButton Style="font-size:1.5em" Icon="looks_two" Value="2" OnClick="@(() => EvaluateAnswer(2))">@CurrentQuiz.Option[1]</MatButton>
+            </div>           
+        </div>
+    </div>
+</Animation>
+}
+@code {
+
+}
