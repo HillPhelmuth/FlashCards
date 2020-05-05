@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FlashCards.Models;
 using Microsoft.AspNetCore.Mvc;
 using RestSharp;
 using Newtonsoft.Json;
-using RestSharp.Serialization;
 using Microsoft.Extensions.Configuration;
 using FlashCards.Interfaces;
 
 namespace FlashCards.Services
 {
-    
     public class WordsApiService : IWordsApiService
     {
         private readonly string _apiKey;

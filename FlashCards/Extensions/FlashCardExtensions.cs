@@ -16,7 +16,7 @@ namespace FlashCards.Extensions
             {
                 int altAnswer;
                 (card.DisplayAnswers ?? (card.DisplayAnswers = new List<AnswerData>())).Clear();
-                
+
                 for (int i = 0; i < 3; i++)
                 {
                     var altDisplayLoop = new AnswerData();
@@ -30,7 +30,7 @@ namespace FlashCards.Extensions
             }
             return cards;
         }
-        
+
         public static void Shuffle<T>(this IList<T> cards)
         {
             int n = cards.Count;

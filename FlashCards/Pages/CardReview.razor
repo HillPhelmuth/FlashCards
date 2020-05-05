@@ -5,9 +5,8 @@
         @if (isReady)
         {
             <div class="col-2" style="background-color:lightblue">
-                <p>Total cards: @Cards.Count</p>
-                <p>Correct answers: @correctTotal</p>
-                <p>Wrong answers: @wrontTotal</p>
+               
+                <ScoreBoard />
                 <br />
                 <button class="btn btn-primary" @onclick="GetNext">Get Next Card</button>
                 <br />

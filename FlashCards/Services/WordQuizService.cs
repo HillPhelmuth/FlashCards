@@ -1,23 +1,17 @@
 ﻿using FlashCards.Interfaces;
 using FlashCards.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FlashCards.Services
 {
-    
     public class WordQuizService : IWordQuizService
     {
         private readonly string _apiKey;
         private readonly IConfiguration _configuration;
         private readonly string _baseUrl = "twinword-word-association-quiz.p.rapidapi.com";
-
 
         public WordQuizService(IConfiguration configuration)
         {
@@ -35,9 +29,7 @@ namespace FlashCards.Services
         {
             var client = new RestClient($"https://{_baseUrl}/type1/?area={area}&level={level}");
             RestRequest request = CreateWordsApiRestRequest();
-            IRestResponse response = client.Execute(request);
-            return response;
-
+            return client.Execute(request);
         }
         public async Task<WordQuizData> GetWordQuiz(string area, int level)
         {
@@ -45,9 +37,20 @@ namespace FlashCards.Services
                 return null;
             if (area != "sat" && area != "gre" && area != "hs" && area != "ms" && area != "es" && area != "gmat" && area != "overall")
                 return null;
+            level = SetQuizLevel(area, level);
             var response = GetResponse(area, level);
             var quizData = JsonConvert.DeserializeObject<WordQuizData>(response.Content);
             return await Task.FromResult(quizData);
+        }
+        private int SetQuizLevel(string area, int level)
+        {
+            if (area == "es" && level > 5)
+                return 5;
+            if (area == "ms" && level > 7)
+                return 7;
+            if (area == "hs" && level > 9)
+                return 9;
+            return level;
         }
     }
 }

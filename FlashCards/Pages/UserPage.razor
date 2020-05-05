@@ -7,7 +7,7 @@
         <button class="btn btn-primary" @onclick="Reset">
             Change Deck
         </button>
-    </div>    
+    </div>
 </div>
 
 @if (!isAddCard)
@@ -25,15 +25,16 @@
                     <p style="color:red; font-size:1.5em">@deckDeleteMessage</p>
                     <Animation Effect="Effect.LightSpeedIn" Speed="Speed.Faster">
                         <MatRadioGroup @bind-Value="deckName">
-                        @foreach (var deck in UserDecks)
-                        {
-                            <br />
-                            <MatRadioButton Value="deck.Name">
-                                Name:
-                                <strong>@deck.Name</strong>,  Subject: <strong>@deck.Subject</strong>
-                            </MatRadioButton>
-                            <MatButton Class="@deck.CssConfirmClass" Style="align-content:center; margin-top:-.2em; color:red" Icon="close" Label="delete" @onclick="@(() => DeleteDeck(deck))"></MatButton>
-                        }
+                            @foreach (var deck in UserDecks)
+                                        {
+                                <br />
+                                <MatRadioButton Value="deck.Name">
+                                    Name:
+                                    <strong>@deck.Name</strong>,  Subject: <strong>@deck.Subject</strong>
+                                </MatRadioButton>
+                                <MatButton Class="@deck.CssConfirmClass" Style="align-content:center; margin-top:-.2em; color:red" Icon="close" Label="delete" @onclick="@(() => DeleteDeck(deck))"></MatButton>
+                                        }
+                            /**/
                         </MatRadioGroup>
                         <br />
                         <button class="btn btn-primary" @onclick="SelectDeck">Select Deck</button>
@@ -61,17 +62,15 @@
             <CascadingValue Value="SelectedDeck">
                 <CascadingValue Value="UserDecks">
                     <TabPage Text="Deck Builder" Size="large">
-                        <Decks UserDeckChanged="DeckChangeHandler" UserCardsChanged="CardsChangeHandler" />
+                        <Decks />
                     </TabPage>
                 </CascadingValue>
             </CascadingValue>
-            <CascadingValue Value="DeckCards">
-                <CascadingValue Value="SelectedDeck">
-                    <TabPage Text="Test Flashcards" Size="large">
-                        <CardReview />
-                    </TabPage>
-                </CascadingValue>
-            </CascadingValue>            
+
+            <TabPage Text="Test Flashcards" Size="large">
+                <CardReview />
+            </TabPage>
+
         </TabControl>
     </div>
 }

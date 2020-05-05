@@ -27,7 +27,6 @@ namespace FlashCards.Models
         public List<string> Option { get; set; }
 
         [JsonProperty("correct")]
-        public int Correct { get; set; }        
-        
+        public int Correct { get; set; }
     }
 }

@@ -12,7 +12,6 @@ namespace FlashCards.Data
         public FlashCardsDbContext(DbContextOptions<FlashCardsDbContext> options)
             : base(options)
         {
-
         }
         public DbSet<Deck> DecksTable { get; set; }
         public DbSet<Card> CardsTable { get; set; }

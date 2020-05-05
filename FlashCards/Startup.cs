@@ -47,12 +47,14 @@ namespace FlashCards
             services.AddTransient<FlashCardsDbService>();
             services.AddScoped<IWordsApiService, WordsApiService>();
             services.AddScoped<IWordQuizService, WordQuizService>();
+            services.AddScoped<IMathQuizService, MathQuizService>();
+            services.AddSingleton<DeckStateService>();
+            services.AddHttpClient();
             services.AddSignalR().AddAzureSignalR(options =>
             {
                 options.ServerStickyMode =
                     Microsoft.Azure.SignalR.ServerStickyMode.Required;
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

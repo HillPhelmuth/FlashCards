@@ -1,0 +1,26 @@
+﻿@inject DeckStateService DeckState
+@implements IDisposable
+
+<ul class="list-group list-group-flush">
+    <li style="background-color:lightgreen">Correct answers: @FlashCardStats.Correct</li>
+    <li style="background-color:lightpink">Incorrect answers: @FlashCardStats.Wrong</li>
+    <li style="background-color:lightblue; font-size:1.2em">Percentage: @Percent</li>
+</ul>
+@code {
+    protected FlashCardStats FlashCardStats { get; set; }
+    protected string Percent
+    {
+        get
+        {
+            var toPercent = FlashCardStats.TotalPct;
+            return toPercent.ToString("P1");
+        }
+    }
+    protected override Task OnInitializedAsync()
+    {
+        FlashCardStats = DeckState.DeckStats;        
+        DeckState.OnChange += StateHasChanged;
+        return base.OnInitializedAsync();
+    }
+    public void Dispose() => DeckState.OnChange -= StateHasChanged;
+}

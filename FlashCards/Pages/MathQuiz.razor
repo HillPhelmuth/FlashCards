@@ -1,0 +1,54 @@
+﻿@inherits MathQuizModel
+
+@if (!isSelectQuiz)
+{
+    <h3>Select a Topic and difficulty level</h3>
+
+    <div style="margin:auto">
+        <div class="zoomin" style="margin-left:auto">
+            <MatSelect @bind-Value="MathTopic" Label="Study Area">
+                <MatOptionString Value=""></MatOptionString>
+                <MatOptionString Value="simple">Simple</MatOptionString>
+                <MatOptionString Value="fractions">Fractions</MatOptionString>              
+                <MatOptionString Value="matrices">Matrices</MatOptionString>
+                <MatOptionString Value="equations-containing-absolute-values">Absolute Values</MatOptionString>               
+            </MatSelect>
+        </div>
+
+        <div class="" style="margin:auto">
+            <button class="btn btn-primary" @onclick="GetMathQuiz">Get Quiz</button>
+        </div>
+
+        <div class="zoomin" style="margin-right:auto">
+            <MatSelect @bind-Value="MathDifficulty" Label="Difficulty Level">
+                <MatOptionString Value=""></MatOptionString>
+                <MatOptionString Value="beginner">Beginner</MatOptionString>
+                <MatOptionString Value="intermediate">Intermediate</MatOptionString>
+                <MatOptionString Value="advanced">Advanced</MatOptionString>
+            </MatSelect>
+        </div>
+    </div>
+}
+@if (isSelectQuiz && mathQuestion.Choices != null)
+{
+    @if (isDisplayMessage)
+    {
+        <h3 class="@answerCss"> @answerMessage</h3>
+    }
+    <div class="mathCard" style="margin:auto">
+        <p style="font-size:.75em">@mathQuestion.Topic</p>
+        <h3>@((MarkupString)mathQuestion.Question)</h3>
+        <ul class="list-group list-group-flush">
+            @foreach (var answer in mathQuestion.Choices)            
+            {
+                int i = mathQuestion.Choices.IndexOf(answer);
+                <li class="list-group-item answer" style="" @onclick="@(() => EvaluateAnswer(i))">@((MarkupString)answer)</li>
+            }
+        </ul>
+        <button @onclick="Reset">Change Topic</button>
+    </div>
+}
+@code {
+
+}
+

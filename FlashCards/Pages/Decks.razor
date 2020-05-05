@@ -2,22 +2,20 @@
 
 <div class="content">
 
-    
-    
     <TabControl>
-        <TabPage Text="Add Standard Cards" Size="small">            
+        <TabPage Text="Add Standard Cards" Size="small">
             <div class="text-center card" style="width:32em; height:18em; border-radius:5px; border-width:2px; border-color:darkgray; margin:auto">
                 <div style="margin:auto">
                     <MatTextField Style="width:28em" @bind-Value="question" TextArea="true" Label="Flashcard Question"></MatTextField>
                 </div>
-                <MatListDivider></MatListDivider>
+                <hr />
                 <div style="margin:auto">
                     <MatTextField Style="width:28em" @bind-Value="answer" TextArea="true" Label="Correct Answer"></MatTextField>
                 </div><br />
                 <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to Deck</button>
             </div>
         </TabPage>
-        
+
         <TabPage Text="Definition Flashcards" Size="small">
             <div class="col">
                 <MatTextField @bind-Value="wordSearch" @onkeyup="VocabKeyUp" Label="Vocab Word"></MatTextField>
@@ -33,32 +31,40 @@
             </div>
         </TabPage>
     </TabControl>
-    
-</div>
-<div class="content">
-    @if (SelectedDeck != null && SelectedDeck.Cards != null)
-    {
-        <p>Cards in deck</p>
-        <div class="card-columns" style="flex:none; width:69em">
-            @foreach (var card in SelectedDeck.Cards)
-            {
-                <div class="card smallCard mat-elevation-z24">
-                    <div style="display:inline-block">
-                        <div class="confirmDelete">@card.ConfirmDelete</div>
-                        <div class="@card.CssConfirmClass" style="margin-left:17.2em">
 
-                            <MatIconButton Class="" Icon="delete" ToggleIcon="delete_forever" OnClick="@(() => DeleteCard(card))">
-                            </MatIconButton>
+</div>
+<div class="text-center">
+    <h4>Deck Stats</h4>
+    <ScoreBoard />
+    <br />
+    <button class="btn btn-primary" @onclick="@(() => isShowCards = !isShowCards)">Show/Hide Cards</button>
+</div>
+@if (isShowCards)
+{
+    <div class="content">
+        @if (SelectedDeck?.Cards != null)
+        {
+            <p>Cards in deck</p>
+            <div class="card-columns" style="flex:none; width:69em">
+                @foreach (var card in SelectedDeck.Cards)
+                {
+                    <div class="card smallCard mat-elevation-z24">
+                        <div style="display:inline-block">
+                            <div class="confirmDelete">@card.ConfirmDelete</div>
+                            <div class="@card.CssConfirmClass" style="margin-left:17.2em">
+
+                                <MatIconButton Class="" Icon="delete" ToggleIcon="delete_forever" OnClick="@(() => DeleteCard(card))">
+                                </MatIconButton>
+                            </div>
                         </div>
+                        <ul style="margin-left:-1em; margin-top:-.2em">
+                            <li><span style="font-size:1.3em">Question</span><br /> @card.Question.ToUpper()</li>
+                            <li><span style="font-size:1.3em">Answer</span><br /> @((MarkupString)card.Answer)</li>
+                        </ul>
+
                     </div>
-                    <ul style="margin-left:-1em; margin-top:-.2em">
-                        <li><span style="font-size:1.3em">Question</span><br /> @card.Question.ToUpper()</li>
-                        <li><span style="font-size:1.3em">Answer</span><br /> @((MarkupString)card.Answer)</li>
-                    </ul>
-
-                </div>
-            }
-        </div>
-    }
-</div>
-
+                }
+            </div>
+        }
+    </div>
+}

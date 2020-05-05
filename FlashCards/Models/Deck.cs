@@ -15,6 +15,6 @@ namespace FlashCards.Models
         public string Subject { get; set; }
         public string User_ID { get; set; }
         [NotMapped]
-        public List<Card> Cards { get; set; }            
+        public List<Card> Cards { get; set; }
     }
 }

@@ -29,12 +29,12 @@ namespace FlashCards.Services
         }
         public bool HasUser => !string.IsNullOrEmpty(UserId);
         [HttpPost]
-        public async Task AddDeck(string deckname, string subject)
+        public async Task AddDeck(string deckName, string subject)
         {
             var userId = UserId;
-            var deck = new Deck() { Name = deckname, User_ID = userId, Subject = subject };
+            var deck = new Deck() { Name = deckName, User_ID = userId, Subject = subject };
             var context = _context;
-            var userDeck = context.DecksTable.ToList().Find(x => x.Name == deckname && x.User_ID == userId);
+            var userDeck = context.DecksTable.ToList().Find(x => x.Name == deckName && x.User_ID == userId);
             if (userDeck != deck)
             {
                 await context.AddAsync(deck);
@@ -48,14 +48,7 @@ namespace FlashCards.Services
             var context = _context;
             return await context.DecksTable.Where(x => x.User_ID == userId).ToListAsync();
         }
-        [HttpGet]
-        public async Task<Deck> GetDeckWithKey(Deck deck)
-        {
-            var userId = UserId;
-            var context = _context;
-            var playlists = await context.DecksTable.Where(x => x.User_ID == userId).ToListAsync();
-            return playlists.Find(x => x.Name == deck.Name);
-        }
+       
         [HttpPost]
         public async Task AddCardToDeck(Card card, Deck deck)
         {

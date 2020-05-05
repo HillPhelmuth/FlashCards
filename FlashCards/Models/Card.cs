@@ -16,6 +16,5 @@ namespace FlashCards.Models
         public string Answer { get; set; }
         [NotMapped]
         public List<AnswerData> DisplayAnswers { get; set; }
-        
     }
 }

@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using FlashCards.Services;
 using FlashCards.Interfaces;
 using FlashCards.Models;
+using FlashCards.Shared;
+using System.Threading;
+using System.Diagnostics;
 
 namespace FlashCards.Pages
 {
-    public class WordQuizModel : ComponentBase
+    public class WordQuizModel : FlashCardComponentBase
     {
         [Inject]
         protected IWordQuizService WordQuiz { get; set; }
@@ -18,36 +21,33 @@ namespace FlashCards.Pages
         protected WordQuizData QuizData { get; set; }
         protected QuizData CurrentQuiz { get; set; }
         protected List<QuizData> Quizzes { get; set; }
-
+        //protected Stopwatch stopWatch;
+        protected string timesUpMessage;
+        protected bool isStartTime;
+        protected bool isStopTime;
         protected int correctCount;
         protected int incorrectCount;
-        protected bool isQuizReady = false;
+        protected int seconds;
+        protected bool isQuizReady;
         protected bool isCorrect;
-        protected bool isZoomLeft;
-        protected bool isZoomRight;
         protected bool isZoomDown;
         protected string answerMessage;
         protected string gameoverMessage;
-
-        private int track = 0;
+        private int track;
 
         protected async Task GetWordQuiz()
         {
             if (QuizArea == null || QuizLevel == 0)
                 return;
-            if (QuizArea == "es" && QuizLevel > 5)
-                QuizLevel = 5;
-            if (QuizArea == "ms" && QuizLevel > 7)
-                QuizLevel = 7;
-            if (QuizArea == "hs" && QuizLevel > 9)
-                QuizLevel = 9;
 
             QuizData = await WordQuiz.GetWordQuiz(QuizArea, QuizLevel);
             Quizzes = QuizData.Quizlist;
             CurrentQuiz = Quizzes[track];
-            track++;
             isQuizReady = true;
             isZoomDown = true;
+            seconds = 10;
+            isStartTime = true;
+
             StateHasChanged();
         }
         protected async Task EvaluateAnswer(int answer)
@@ -57,14 +57,12 @@ namespace FlashCards.Pages
                 isCorrect = true;
                 answerMessage = "Correct!";
                 correctCount++;
-                track++;
             }
             else
             {
                 isCorrect = false;
                 answerMessage = "Yous dont do Words good";
                 incorrectCount++;
-                track++;
             }
             if (Quizzes.Count <= track)
             {
@@ -73,9 +71,33 @@ namespace FlashCards.Pages
                 StateHasChanged();
                 return;
             }
-            await Task.Run(() => CurrentQuiz = Quizzes[track]);
+            isStartTime = false;
+            seconds = 0;
             StateHasChanged();
-        }       
+            await GetNextQuestion();
+        }
+        protected Task GetNextQuestion()
+        {
+            track++;
+            CurrentQuiz = Quizzes[track];
+            isZoomDown = !isZoomDown;
+            timesUpMessage = "";
+            seconds = 10;
+            isStartTime = true;
+            StateHasChanged();
+            return Task.CompletedTask;
+        }
         protected void EnterTop() => isZoomDown = !isZoomDown;
+
+        protected Task TimeIsUp(bool isup)
+        {
+            timesUpMessage = "Time's up!";
+            isStartTime = !isStartTime;
+            isStopTime = isup;
+            StateHasChanged();
+            return Task.CompletedTask;
+        }
     }
 }
+
+
