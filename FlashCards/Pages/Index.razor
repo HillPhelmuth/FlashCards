@@ -7,7 +7,7 @@
 @if (!userAuth)
 {
     <h2 class="text-center">Please Sign-in to Create FlashCard Decks</h2>
-    
+
 }
 else if (userAuth && !isUserReady)
 {
@@ -30,25 +30,27 @@ else if (userAuth && !isUserReady)
 }
 else
 {
-    <div class="text-center" style="margin-left:auto; margin-right:auto">
-        <TabControl>
-            <TabPage Text="Create and use flashcards to study" Size="large">
-                <UserPage />
-            </TabPage>
-            <TabPage Text="Test your knowledge with a vocabulary quiz" Size="large">
-                <MatThemeProvider Theme="theme">
+    <MatThemeProvider Theme="theme">
+        <div class="text-center" style="margin-left:auto; margin-right:auto">
+            <TabControl>
+                <TabPage Text="Create and use flashcards to study" Size="large">
+                    <UserPage />
+                </TabPage>
+                <TabPage Text="Test your knowledge with a vocabulary quiz" Size="large">
+
                     <WordQuiz />
-                </MatThemeProvider>
-            </TabPage>
-            <TabPage Text="Test your knowledge with a math quiz" Size="large">
-                <MathQuiz />
-            </TabPage>
-        </TabControl>
-    </div>
+
+                </TabPage>
+                <TabPage Text="Test your knowledge with a math quiz" Size="large">
+                    <MathQuiz />
+                </TabPage>
+            </TabControl>
+        </div>
+    </MatThemeProvider>
 }
 
 @code {
-    
+
     protected bool userAuth;
     protected bool isUserReady;
     public MatTheme theme = new MatTheme()

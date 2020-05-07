@@ -29,6 +29,7 @@ namespace FlashCards.Pages
 
         protected override Task OnInitializedAsync()
         {
+            DeckState.OnChange += StateHasChanged;
             Cards = DeckState.Cards;
             Cards = Cards.AddAltAnswers();
             Cards.Shuffle();
@@ -37,7 +38,6 @@ namespace FlashCards.Pages
             DisplayCard = Cards[0];
             Answers = DisplayCard.DisplayAnswers;
             Answers.Shuffle();
-            DeckState.OnChange += StateHasChanged;
             return base.OnInitializedAsync();
         }
         protected void GetNext()

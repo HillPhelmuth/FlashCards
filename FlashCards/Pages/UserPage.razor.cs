@@ -41,6 +41,7 @@ namespace FlashCards.Pages
             UserDecks ??= new List<Deck>();
             UserDecks.Add(newDeck);
             SelectedDeck = newDeck;
+            deckName = newDeck.Name;
             DeckState.UpdateSelectedDeck(SelectedDeck);
             await Database.AddDeck(newDeck.Name, newDeck.Subject);
             isAddCard = true;
@@ -90,6 +91,5 @@ namespace FlashCards.Pages
             deck.IsDeleteConfirm = !deck.IsDeleteConfirm;
             deckDeleteMessage = deck.ConfirmDelete;
         }
-       
     }
 }

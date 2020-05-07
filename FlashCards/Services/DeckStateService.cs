@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FlashCards.Models;
 
 namespace FlashCards.Services
 {
     public class DeckStateService
     {
-        public FlashCardStats DeckStats { get; private set; }
+        public DeckStats DeckStats { get; private set; }
         public Deck Deck { get; private set; }
         public List<Card> Cards { get; private set; }
 
@@ -14,7 +15,7 @@ namespace FlashCards.Services
 
         public void UpdateSelectedDeck(Deck deck)
         {
-            DeckStats = new FlashCardStats()
+            DeckStats = new DeckStats()
             {
                 Deck = deck
             };
@@ -26,9 +27,9 @@ namespace FlashCards.Services
             if (isCorrect)
                 DeckStats.Correct++;
             else
-                DeckStats.Wrong++;
+                DeckStats.InCorrect++;
             var correct = DeckStats.Correct;
-            var total = DeckStats.Correct + DeckStats.Wrong;
+            var total = DeckStats.Correct + DeckStats.InCorrect;
             DeckStats.TotalPct = correct / total;
             NotifyStateChanged();
         }

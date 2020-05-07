@@ -15,5 +15,6 @@ namespace FlashCards.Data
         }
         public DbSet<Deck> DecksTable { get; set; }
         public DbSet<Card> CardsTable { get; set; }
+        public DbSet<DeckStats> StatsTable { get; set; }
     }
 }

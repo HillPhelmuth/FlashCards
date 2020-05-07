@@ -37,12 +37,12 @@
     }
     <div class="mathCard" style="margin:auto">
         <p style="font-size:.75em">@mathQuestion.Topic</p>
-        <h3>@((MarkupString)mathQuestion.Question)</h3>
+        <h3><mrow>@((MarkupString)mathQuestion.Question)</mrow></h3>
         <ul class="list-group list-group-flush">
             @foreach (var answer in mathQuestion.Choices)            
             {
                 int i = mathQuestion.Choices.IndexOf(answer);
-                <li class="list-group-item answer" style="" @onclick="@(() => EvaluateAnswer(i))">@((MarkupString)answer)</li>
+                <li class="list-group-item answer" style="" @onclick="@(() => EvaluateAnswer(i))"><mrow>@((MarkupString)answer)</mrow></li>
             }
         </ul>
         <button @onclick="Reset">Change Topic</button>

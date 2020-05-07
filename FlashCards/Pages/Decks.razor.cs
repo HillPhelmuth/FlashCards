@@ -41,6 +41,7 @@ namespace FlashCards.Pages
             await Database.AddCardToDeck(newCard, SelectedDeck);
             question = null;
             answer = null;
+            DeckCards = SelectedDeck.Cards;
             DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
             StateHasChanged();
         }

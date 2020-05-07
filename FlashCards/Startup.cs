@@ -41,6 +41,8 @@ namespace FlashCards
             services.AddDbContext<FlashCardsDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("FlashCardsDb")));
+            services.AddDbContext<FlashCardsSqlLiteDbCtx>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("FlashCardsSqlite")));
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
@@ -48,7 +50,7 @@ namespace FlashCards
             services.AddScoped<IWordsApiService, WordsApiService>();
             services.AddScoped<IWordQuizService, WordQuizService>();
             services.AddScoped<IMathQuizService, MathQuizService>();
-            services.AddSingleton<DeckStateService>();
+            services.AddScoped<DeckStateService>();
             services.AddHttpClient();
             services.AddSignalR().AddAzureSignalR(options =>
             {

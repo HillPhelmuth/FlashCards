@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 
 namespace FlashCards.Services
 {
-    public class FlashCardsDbService
+    public partial class FlashCardsDbService
     {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-        private readonly FlashCardsDbContext _context;
-        public FlashCardsDbService(AuthenticationStateProvider authenticationStateProvider, FlashCardsDbContext context)
+        //private readonly FlashCardsDbContext _context;
+        private readonly FlashCardsSqlLiteDbCtx _context;
+        public FlashCardsDbService(AuthenticationStateProvider authenticationStateProvider, FlashCardsSqlLiteDbCtx context)
         {
             _authenticationStateProvider = authenticationStateProvider;
             _context = context;
@@ -48,7 +49,7 @@ namespace FlashCards.Services
             var context = _context;
             return await context.DecksTable.Where(x => x.User_ID == userId).ToListAsync();
         }
-       
+
         [HttpPost]
         public async Task AddCardToDeck(Card card, Deck deck)
         {
