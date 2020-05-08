@@ -1,4 +1,4 @@
-﻿@inject DeckStateService DeckState
+﻿@inherits FlashCardComponentBase
 @implements IDisposable
 
 <ul class="list-group list-group-flush">
@@ -19,8 +19,8 @@
     protected override Task OnInitializedAsync()
     {
         DeckStats = DeckState.DeckStats;        
-        DeckState.OnChange += StateHasChanged;
+        DeckState.OnChange += UpdateState;
         return base.OnInitializedAsync();
     }
-    public void Dispose() => DeckState.OnChange -= StateHasChanged;
+    public void Dispose() => DeckState.OnChange -= UpdateState;
 }

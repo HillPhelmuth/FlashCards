@@ -1,0 +1,25 @@
+﻿
+<h3 class="timer">@timeLeft</h3>
+@code { 
+    TimeSpan timeLeft;
+    //[Parameter]
+    //public int Seconds { get; set; }
+    //[Parameter]
+    //public EventCallback<bool> TimeOutAlert { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        timeLeft = new TimeSpan(0, 0, 10);
+
+        for (int i = 10; i > 0; i--)
+        {
+            await Task.Delay(1000);
+            timeLeft = timeLeft.Subtract(new TimeSpan(0, 0, 1));
+            Console.WriteLine($"{i}s left");
+            //if (i == 1)
+            //    await TimeOutAlert.InvokeAsync(true);
+            StateHasChanged();
+        }
+
+    }
+    
+}

@@ -15,9 +15,9 @@ namespace FlashCards.Pages
         [Inject]
         protected IWordsApiService WordsApi { get; set; }
 
-        protected Deck SelectedDeck { get; set; }
+        //protected Deck SelectedDeck { get; set; }
 
-        public List<Card> DeckCards { get; set; }
+        //public List<Card> DeckCards { get; set; }
 
         protected string question;
         protected string answer;
@@ -26,9 +26,10 @@ namespace FlashCards.Pages
         protected bool isShowCards;
         protected override async Task OnInitializedAsync()
         {
-            SelectedDeck = DeckState.Deck;
-            DeckCards = await Database.GetDeckCards(SelectedDeck);
-            DeckState.OnChange += StateHasChanged;
+            //SelectedDeck = DeckState.SelectedDeck;
+            //DeckCards = await Database.GetDeckCards(SelectedDeck);
+            await UpdateState();
+            DeckState.OnChange += UpdateState;
             SelectedDeck.Cards ??= new List<Card>();
             SelectedDeck.Cards.Distinct().ToList().AddRange(DeckCards);
         }
@@ -42,7 +43,7 @@ namespace FlashCards.Pages
             question = null;
             answer = null;
             DeckCards = SelectedDeck.Cards;
-            DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
+            await DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
             StateHasChanged();
         }
         protected async Task CreateVocabCard()
@@ -52,7 +53,7 @@ namespace FlashCards.Pages
             var definition = await WordsApi.GetDefinitions(wordSearch);
             var firstDefinition = definition?.Definitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITION FOUND" };
             await CreateVocabCard(definition, firstDefinition);
-            DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
+            await DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
             wordSearch = null;
             StateHasChanged();
         }
@@ -64,7 +65,7 @@ namespace FlashCards.Pages
                 var firstDefinition = definition?.RandomDefinitions?.FirstOrDefault() ?? new DefinitionData() { Definition = "NO DEFINITION FOUND" };
                 await CreateVocabCard(definition, firstDefinition);
             }
-            DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
+            await DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
             wordSearch = null;
             isLoading = false;
             StateHasChanged();
@@ -103,6 +104,7 @@ namespace FlashCards.Pages
             {
                 await Database.RemoveCardFromDeck(card);
                 SelectedDeck.Cards.Remove(card);
+                await DeckState.UpdateDeckCards(SelectedDeck, SelectedDeck.Cards);
                 card.ConfirmDelete = "";
                 card.CssConfirmClass = "";
             }
@@ -114,6 +116,6 @@ namespace FlashCards.Pages
             card.IsDeleteConfirm = !card.IsDeleteConfirm;
             StateHasChanged();
         }
-        public void Dispose() => DeckState.OnChange -= StateHasChanged;
+        public void Dispose() => DeckState.OnChange -= UpdateState;
     }
 }

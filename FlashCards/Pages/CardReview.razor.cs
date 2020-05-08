@@ -16,7 +16,7 @@ namespace FlashCards.Pages
         //[CascadingParameter]
         //protected Deck SelectedDeck { get; set; }
         //[CascadingParameter]
-        protected List<Card> Cards { get; set; }
+        //protected List<Card> DeckCards { get; set; }
         protected Card DisplayCard { get; set; }
         protected List<AnswerData> Answers { get; set; }
 
@@ -27,27 +27,36 @@ namespace FlashCards.Pages
         protected bool enabled;
         protected bool isReady;
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
-            DeckState.OnChange += StateHasChanged;
-            Cards = DeckState.Cards;
-            Cards = Cards.AddAltAnswers();
-            Cards.Shuffle();
-            isReady = true;
-            enabled = true;
-            DisplayCard = Cards[0];
+            await UpdateState();
+            DeckState.OnChange += UpdateState;
+            //SelectedDeck = DeckState.SelectedDeck;
+            //DeckCards = DeckState.Cards;
+            AddTestAnswers();
+            DisplayCard = DeckCards[0];
             Answers = DisplayCard.DisplayAnswers;
             Answers.Shuffle();
-            return base.OnInitializedAsync();
         }
+
+        private void AddTestAnswers()
+        {
+            DeckCards = DeckCards.AddAltAnswers();
+            DeckCards.Shuffle();
+            if (DeckCards == null)
+                return;
+            isReady = true;
+            enabled = true;
+        }
+
         protected void GetNext()
         {
-            if (Cards.Count <= trackNext)
+            if (DeckCards.Count <= trackNext)
             {
                 return;
             }
             enabled = true;
-            DisplayCard = Cards[trackNext];
+            DisplayCard = DeckCards[trackNext];
             trackNext++;
             Answers = DisplayCard.DisplayAnswers;
             Answers.Shuffle();
@@ -76,6 +85,6 @@ namespace FlashCards.Pages
         //protected void WrongAnimEnd(AnswerData answer) => answer.IsIncorrect = !answer.IsIncorrect;
         //protected void CorrectAnimEnd(AnswerData answer) => answer.IsCorrect = !answer.IsCorrect;
 
-        public void Dispose() => DeckState.OnChange -= StateHasChanged;
+        public void Dispose() => DeckState.OnChange -= UpdateState;
     }
 }

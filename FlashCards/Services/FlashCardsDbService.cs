@@ -79,11 +79,11 @@ namespace FlashCards.Services
         {
             var context = _context;
             var cardToUpdate = await context.CardsTable.Where(x => x.ID == card.ID).FirstOrDefaultAsync();
-            if (deck.ID != card.Decks_ID)
-            {
-                cardToUpdate = card;
-                await context.SaveChangesAsync();
-            }
+
+            cardToUpdate.Question = card.Question;
+            cardToUpdate.Answer = card.Answer;
+            await context.SaveChangesAsync();
+
         }
         [HttpDelete]
         public async Task RemoveCardFromDeck(Card card)

@@ -12,7 +12,7 @@
                 <div style="margin:auto">
                     <MatTextField Style="width:28em" @bind-Value="answer" TextArea="true" Label="Correct Answer"></MatTextField>
                 </div><br />
-                <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to Deck</button>
+                <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to SelectedDeck</button>
             </div>
         </TabPage>
 
@@ -34,7 +34,7 @@
 
 </div>
 <div class="text-center">
-    <h4>Deck Stats</h4>
+    <h4>SelectedDeck Stats</h4>
     <ScoreBoard />
     <br />
     <button class="btn btn-primary" @onclick="@(() => isShowCards = !isShowCards)">Show/Hide Cards</button>

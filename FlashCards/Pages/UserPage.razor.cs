@@ -2,22 +2,19 @@
 using System.Threading.Tasks;
 using FlashCards.Models;
 using FlashCards.Services;
+using FlashCards.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace FlashCards.Pages
 {
-    public class UserPageModel : ComponentBase
+    public class UserPageModel : FlashCardComponentBase
     {
-        [Inject]
-        protected FlashCardsDbService Database { get; set; }
-        [Inject]
-        protected DeckStateService DeckState { get; set; }
         [Parameter]
         public List<Deck> UserDecks { get; set; }
-        [Parameter]
-        public Deck SelectedDeck { get; set; }
-        [Parameter]
-        public List<Card> DeckCards { get; set; }
+        //[Parameter]
+        //public Deck SelectedDeck { get; set; }
+        //[Parameter]
+        //public List<Card> DeckCards { get; set; }
         protected Deck newDeck = new Deck();
         protected string deckName = "no deck selected";
         protected string deckDeleteMessage;
@@ -31,6 +28,7 @@ namespace FlashCards.Pages
         protected override async Task OnInitializedAsync()
         {
             UserDecks = await Database.GetUserDecks();
+            await DeckState.UpdateUserDeckCards(UserDecks);
             if (UserDecks.Count > 0)
                 userHasDecks = true;
             else
@@ -42,7 +40,7 @@ namespace FlashCards.Pages
             UserDecks.Add(newDeck);
             SelectedDeck = newDeck;
             deckName = newDeck.Name;
-            DeckState.UpdateSelectedDeck(SelectedDeck);
+            await DeckState.UpdateSelectedDeckAsync(SelectedDeck);
             await Database.AddDeck(newDeck.Name, newDeck.Subject);
             isAddCard = true;
             isSelectDeck = true;
@@ -50,11 +48,11 @@ namespace FlashCards.Pages
         protected async Task SelectDeck()
         {
             SelectedDeck = UserDecks.Find(x => x.Name == deckName);
-            DeckState.UpdateSelectedDeck(SelectedDeck);
+            await DeckState.UpdateSelectedDeckAsync(SelectedDeck);
             isAddCard = true;
             DeckCards = await Database.GetDeckCards(SelectedDeck);
             if (SelectedDeck != null) SelectedDeck.Cards = DeckCards;
-            DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
+            await DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
             isSelectDeck = true;
             StateHasChanged();
         }

@@ -6,7 +6,7 @@
 
 @if (!userAuth)
 {
-    <h2 class="text-center">Please Sign-in to Create FlashCard Decks</h2>
+    <h2 class="text-center">Please Sign-in to Create FlashCard SelectedDecks</h2>
 
 }
 else if (userAuth && !isUserReady)
@@ -37,9 +37,7 @@ else
                     <UserPage />
                 </TabPage>
                 <TabPage Text="Test your knowledge with a vocabulary quiz" Size="large">
-
                     <WordQuiz />
-
                 </TabPage>
                 <TabPage Text="Test your knowledge with a math quiz" Size="large">
                     <MathQuiz />

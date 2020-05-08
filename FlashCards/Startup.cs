@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -17,6 +18,8 @@ using FlashCards.Areas.Identity;
 using FlashCards.Data;
 using FlashCards.Services;
 using FlashCards.Interfaces;
+using Microsoft.AspNetCore.Http.Extensions;
+
 
 namespace FlashCards
 {
@@ -52,6 +55,14 @@ namespace FlashCards
             services.AddScoped<IMathQuizService, MathQuizService>();
             services.AddScoped<DeckStateService>();
             services.AddHttpClient();
+            services.AddScoped(s =>
+            {
+                var uriHelper = s.GetRequiredService<NavigationManager>();
+                return new HttpClient
+                {
+                    BaseAddress = new Uri(uriHelper.BaseUri)
+                };
+            });
             services.AddSignalR().AddAzureSignalR(options =>
             {
                 options.ServerStickyMode =

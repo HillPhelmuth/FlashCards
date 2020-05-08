@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col">
         <button class="btn btn-primary" @onclick="Reset">
-            Change Deck
+            Change SelectedDeck
         </button>
     </div>
 </div>
@@ -15,7 +15,7 @@
 @if (userHasDecks)
     {
 <div class="col" style="margin:auto; padding-left:12em; padding-right:12em">
-    <p>Select Deck</p>
+    <p>Select SelectedDeck</p>
     <button class="PanelToggle mid" @onclick="@(() => panelOpenState = !panelOpenState)">
         Select a deck
     </button>
@@ -37,17 +37,17 @@
 
             </MatRadioGroup>
             <br />
-            <button class="btn btn-primary" @onclick="SelectDeck">Select Deck</button>
+            <button class="btn btn-primary" @onclick="SelectDeck">Select SelectedDeck</button>
         </Animation>
     </div>
             }
     <br /><br />
-    <button class="btn btn-secondary" style="color:black; background-color:lightgreen" @onclick="@(() => addNewToggle = !addNewToggle)"> Add New Deck</button>
+    <button class="btn btn-secondary" style="color:black; background-color:lightgreen" @onclick="@(() => addNewToggle = !addNewToggle)"> Add New SelectedDeck</button>
 </div>
     }
 @if (addNewToggle)
     {
-<p>Create Deck</p>
+<p>Create SelectedDeck</p>
 <MatTextField @bind-Value="newDeck.Name" Label="Name"></MatTextField>
 <br />
 <MatTextField @bind-Value="newDeck.Subject" Label="Subject"></MatTextField>
@@ -59,11 +59,14 @@
 {
 <div class="text-center">
     <TabControl>
-        <TabPage Text="Deck Builder" Size="large">
+        <TabPage Text="SelectedDeck Builder" Size="large">
             <Decks />
         </TabPage>
         <TabPage Text="Test Flashcards" Size="large">
             <CardReview />
+        </TabPage>
+        <TabPage Text="Edit Decks" Size="large">
+            <EditDecks />
         </TabPage>
     </TabControl>
 </div>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FlashCards.Models;
 
@@ -7,22 +8,39 @@ namespace FlashCards.Services
 {
     public class DeckStateService
     {
+        private readonly FlashCardsDbService _dbService;
         public DeckStats DeckStats { get; private set; }
-        public Deck Deck { get; private set; }
+        public Deck SelectedDeck { get; private set; }
         public List<Card> Cards { get; private set; }
+        public List<Deck> UserDecks { get; private set; }
 
-        public event Action OnChange;
+        public event Func<Task> OnChange;
 
-        public void UpdateSelectedDeck(Deck deck)
+        public DeckStateService(FlashCardsDbService dbService)
+        {
+            _dbService = dbService;
+        }
+        public async Task UpdateSelectedDeckAsync(Deck deck)
         {
             DeckStats = new DeckStats()
             {
                 Deck = deck
             };
-            Deck = deck;
-            NotifyStateChanged();
+            SelectedDeck = deck;
+            await NotifyStateChanged();
         }
-        public void UpdateStats(bool isCorrect)
+
+        public async Task UpdateUserDeckCards(List<Deck> decks)
+        {
+            foreach (var deck in decks)
+            {
+                var cards = await _dbService.GetDeckCards(deck);
+                deck.Cards = cards;
+            }
+            UserDecks = decks;
+            await NotifyStateChanged();
+        }
+        public async Task UpdateStats(bool isCorrect)
         {
             if (isCorrect)
                 DeckStats.Correct++;
@@ -31,14 +49,23 @@ namespace FlashCards.Services
             var correct = DeckStats.Correct;
             var total = DeckStats.Correct + DeckStats.InCorrect;
             DeckStats.TotalPct = correct / total;
-            NotifyStateChanged();
+            await NotifyStateChanged();
         }
-        public void UpdateDeckCards(Deck deck, List<Card> cards)
+        public async Task UpdateDeckCards(Deck deck, List<Card> cards)
         {
-            Deck = deck;
+            SelectedDeck = deck;
             Cards = cards;
-            NotifyStateChanged();
+            SelectedDeck.Cards = cards;
+            await NotifyStateChanged();
         }
-        private void NotifyStateChanged() => OnChange?.Invoke();
+
+        public async Task<List<Card>> GetDeckCards(Deck deck)
+        {
+            return await _dbService.GetDeckCards(deck);
+        }
+        private async Task NotifyStateChanged()
+        {
+            if (OnChange != null) await OnChange?.Invoke();
+        }
     }
 }

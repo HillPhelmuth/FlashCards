@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inherits EditDecksModel
+<br />
+<MatTable Items="UserDecks" Style="max-width: 40em">
+    <MatTableHeader>
+        <th>Edit</th>
+        <th>Name</th>
+        <th>Subject</th>
+        <th>No. of Cards</th>
+
+    </MatTableHeader>
+
+    <MatTableRow>
+        <td>
+            <MatButton Icon="list" Label="Edit" OnClick="@(async () => await ShowDeckCards(context))"></MatButton>
+        </td>
+        <td>@context.Name</td>
+        <td>@context.Subject</td>
+        <td>@context.Cards.Count</td>
+
+
+    </MatTableRow>
+
+</MatTable>
+@if (showCards)
+{
+    <MatTable Items="DisplayCards" Style="max-width: 50em">
+        <MatTableHeader>
+            <th>Flash Cards</th>
+            <th>Question:</th>
+            <th>Answer:</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td><MatButton Icon="list" Label="Edit Card" OnClick="@(() => EditCard(context))"></MatButton></td>
+            <td>@context.Question</td>
+
+            <td>
+                @context.Answer
+            </td>
+
+        </MatTableRow>
+    </MatTable>
+
+    <MatDialog IsOpen="showEdit">
+        <MatDialogTitle>Edit FlashCard</MatDialogTitle>
+        <MatDialogContent>
+            <MatTextField @bind-Value="question" TextArea="true" Label="Flashcard Question"></MatTextField>
+            <br />
+            <MatTextField @bind-Value="answer" TextArea="true" Label="Flashcard Question"></MatTextField>
+        </MatDialogContent>
+        <MatDialogActions>
+            <MatButton OnClick="@(e => { showEdit = false; })">No Thanks</MatButton>
+            <MatButton OnClick="UpdateCard">UPDATE</MatButton>
+        </MatDialogActions>
+    </MatDialog>
+}
+@code {
+
+}
