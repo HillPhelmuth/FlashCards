@@ -6,23 +6,52 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\CreateTablesSql\**" />
+    <Compile Remove="Data\Migrations\**" />
+    <Compile Remove="Interfaces\**" />
     <Compile Remove="Migrations\**" />
+    <Content Remove="Data\CreateTablesSql\**" />
+    <Content Remove="Data\Migrations\**" />
+    <Content Remove="Interfaces\**" />
     <Content Remove="Migrations\**" />
+    <EmbeddedResource Remove="Data\CreateTablesSql\**" />
+    <EmbeddedResource Remove="Data\Migrations\**" />
+    <EmbeddedResource Remove="Interfaces\**" />
     <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="Data\CreateTablesSql\**" />
+    <None Remove="Data\Migrations\**" />
+    <None Remove="Interfaces\**" />
     <None Remove="Migrations\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\FlashCardsSqlLiteDbCtx.cs" />
     <Compile Remove="Data\WeatherForecast.cs" />
     <Compile Remove="Data\WeatherForecastService.cs" />
+    <Compile Remove="Extensions\QuizExtensions.cs" />
+    <Compile Remove="Models\DefinitionModel.cs" />
+    <Compile Remove="Models\MathQuestionModel.cs" />
     <Compile Remove="Models\UserStats.cs" />
     <Compile Remove="Models\VocabAnswer.cs" />
+    <Compile Remove="Models\WordQuizData.cs" />
+    <Compile Remove="Pages\MathQuiz.razor.cs" />
+    <Compile Remove="Pages\WordQuiz.razor.cs" />
     <Compile Remove="Services\FlashCardService.cs" />
+    <Compile Remove="Services\MathQuizService.cs" />
+    <Compile Remove="Services\WordQuizService.cs" />
+    <Compile Remove="Services\WordsApiService.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="Pages\Counter.razor" />
     <Content Remove="Pages\FetchData.razor" />
+    <Content Remove="Pages\MathQuiz.razor" />
+    <Content Remove="Pages\TryTimer.razor" />
+    <Content Remove="Pages\WordQuiz.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="flashcards.db" />
   </ItemGroup>
 
   <ItemGroup>

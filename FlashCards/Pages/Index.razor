@@ -1,46 +1,69 @@
 ﻿@page "/"
+@inherits FlashCardComponentBase
 
-@inject FlashCardsDbService Database
-
-<h1 class="text-center">Flash Cards</h1>
+<h1 class="text-center" style="margin-left: auto; margin-right: auto">Flash Cards</h1>
 
 @if (!userAuth)
 {
-    <h2 class="text-center">Please Sign-in to Create FlashCard SelectedDecks</h2>
+    <h2 class="text-center">Please Sign-in to Create FlashCard Decks</h2>
 
 }
 else if (userAuth && !isUserReady)
 {
-    <div class="text-center">
-        <div class="text-center">
-            <ol style="margin-left:auto; margin-right:auto; font-size:1.4em">
-                <li>Create <strong>flash cards</strong> to help you study</li>
-                <li>Review your own flashcards in a quiz format to <strong>test your progress</strong></li>
-                <li>
-                    Take a section of a <strong>practice exam</strong> from the language section of old
-                    <strong>Standarized tests</strong> from elementary school through college entrance exams
-                    and beyond!
-                </li>
-            </ol>
+    <div>
+        <div style="margin-left: auto; margin-right: auto; max-width: 45em">
+            <MatList Style="font-size:1.4em" TwoLine="true">
+                <MatListItem>
+                    <MatListItemText>
+                        <MatListItemPrimaryText>
+                            Create <strong>flashcard decks</strong> to help you study
+                        </MatListItemPrimaryText>
+                        <MatListItemSecondaryText>
+                            Add and edit decks and cards in an open format for maximum flexibility
+                        </MatListItemSecondaryText>
+                    </MatListItemText>
+                </MatListItem>
+                <MatListItem>
+                    <MatListItemText>
+                        <MatListItemPrimaryText>
+                            Review your flashcards to <strong>test your knowledge</strong>
+                        </MatListItemPrimaryText>
+                        <MatListItemSecondaryText>
+                            Your flashcards are shuffled with multiple choice answers generated for you
+                        </MatListItemSecondaryText>
+                    </MatListItemText>
+                </MatListItem>
+                <MatListItem>
+                    <MatListItemText>
+                        <MatListItemPrimaryText>
+                            Use our scoreboard to <strong>track your progress</strong> over time.
+                        </MatListItemPrimaryText>
+                        <MatListItemSecondaryText>
+                            We'll keep track of your right and wrong answers for each flashcard deck
+                        </MatListItemSecondaryText>
+                    </MatListItemText>
+                </MatListItem>
+               
+            </MatList>
         </div>
-        <button class="btn btn-primary" style="margin-left:auto; margin-right:auto" @onclick="@(() => isUserReady = !isUserReady)">
-            Start studying!
-        </button>
+        <div class="text-center" style="margin-left: auto; margin-right: auto">
+            <button class="btn btn-primary" @onclick="@(() => isUserReady = !isUserReady)">
+                Start studying!
+            </button>
+        </div>
     </div>
 }
 else
 {
+
     <MatThemeProvider Theme="theme">
         <div class="text-center" style="margin-left:auto; margin-right:auto">
             <TabControl>
                 <TabPage Text="Create and use flashcards to study" Size="large">
                     <UserPage />
                 </TabPage>
-                <TabPage Text="Test your knowledge with a vocabulary quiz" Size="large">
-                    <WordQuiz />
-                </TabPage>
-                <TabPage Text="Test your knowledge with a math quiz" Size="large">
-                    <MathQuiz />
+                <TabPage Text="Edit your questions or answers" Size="large">
+                    <EditDecks />
                 </TabPage>
             </TabControl>
         </div>
@@ -53,18 +76,18 @@ else
     protected bool isUserReady;
     public MatTheme theme = new MatTheme()
     {
-        Primary = MatThemeColors.Orange._500.Value,
-        Secondary = MatThemeColors.Blue._800.Value,
-        Background = MatThemeColors.LightBlue._300.Value,
-        OnSurface = MatThemeColors.Amber._200.Value,
-        Surface = MatThemeColors.BlueGrey._300.Value
+        Primary = "blue",
+        Secondary = MatThemeColors.Red._800.Value
     };
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        userAuth = Database.HasUser;
-        return base.OnInitializedAsync();
-
+        userAuth = DeckState.HasUser;
+        if (userAuth)
+        {
+            UserDecks = await DeckState.GetUserDecks();
+            await DeckState.UpdateUserDeckCards(UserDecks);
+        }
     }
 
 }

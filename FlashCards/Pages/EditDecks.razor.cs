@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FlashCards.Models;
 using FlashCards.Shared;
-using Microsoft.AspNetCore.Components;
 
 namespace FlashCards.Pages
 {
-    public class EditDecksModel : FlashCardComponentBase
+    public class EditDecksModel : FlashCardComponentBase, IDisposable
     {
-        protected List<Deck> UserDecks { get; set; }
-        [Parameter]
         public List<Card> DisplayCards { get; set; }
         protected Card cardEdit;
         protected Deck deckEdit;
@@ -19,23 +15,17 @@ namespace FlashCards.Pages
         protected bool showEdit;
         protected string question;
         protected string answer;
-        protected string[] cardTempArray;
-       
 
         protected override async Task OnInitializedAsync()
         {
-            var decks = await Database.GetUserDecks();
-            await DeckState.UpdateUserDeckCards(decks);
-            UserDecks = DeckState.UserDecks;
-
-            //DeckState.OnChange += UpdateState;
+            await UpdateState();
+            DeckState.OnChange += UpdateState;
         }
 
         protected async Task ShowDeckCards(Deck deck)
         {
             deckEdit = deck;
-            DisplayCards = await Database.GetDeckCards(deck);
-            cardTempArray = DisplayCards.Select(x => x.Question).ToArray();
+            DisplayCards = await DeckState.GetDeckCards(deck);
             showCards = true;
             StateHasChanged();
         }
@@ -54,10 +44,10 @@ namespace FlashCards.Pages
         {
             cardEdit.Answer = answer;
             cardEdit.Question = question;
-            await Database.UpdateDeckCards(cardEdit, deckEdit);
+            await DeckState.UpdateDeckCard(deckEdit, cardEdit);
             showEdit = false;
             StateHasChanged();
         }
-        //public void Dispose() => DeckState.OnChange -= UpdateState;
+        public void Dispose() => DeckState.OnChange -= UpdateState;
     }
 }

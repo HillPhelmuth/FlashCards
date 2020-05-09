@@ -27,9 +27,9 @@
     string GetButtonClass(TabPage page)
     {
         if (page.Size == "small")
-            return page == ActivePage ? "smallTab-active" : "smallTab-inactive";
+            return page == ActivePage ? "btn-primary" : "btn-secondary";
         if (page.Size == "large")
-            return page == ActivePage ? "largeTab-active" : "largeTab-inactive";
+            return page == ActivePage ? "btn-primary" : "btn-secondary";
         return page == ActivePage ? "btn-primary" : "btn-secondary";
     }
     void ActivatePage(TabPage page)
