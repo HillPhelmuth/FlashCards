@@ -1,13 +1,19 @@
 ﻿@inherits FlashCardComponentBase
 @implements IDisposable
 
-<ul class="list-group list-group-flush">
-    <li style="background-color:lightgreen">Correct answers: @DeckStats.Correct</li>
-    <li style="background-color:lightpink">Incorrect answers: @DeckStats.InCorrect</li>
-    <li style="background-color:lightblue; font-size:1.2em">Percentage: @Percent</li>
-</ul>
+<div class="list-group list-group-flush card mat-elevation-z18 scoreboard" style="padding-top: .5em; margin-left: auto; margin-right: auto; max-width: 30em">
+    <div class="list-group-item" style="line-height: 1.3em; font-size: 1.2em; margin: auto">
+         @deckName answer history
+    </div>
+    <div class="list-group-item" style="color: darkgreen">Correct answers:@decimal.Truncate(DeckStats.Correct)</div>
+    <div class="list-group-item" style="color: darkred">Incorrect answers: @decimal.Truncate(DeckStats.InCorrect)</div>
+    <div class="list-group-item" style="font-weight: bold">Percentage: @Percent</div>
+    <div class="list-group-item" style="margin: auto">
+        <MatButton Label="Reset" Style="color: red" Icon="remove_circle" OnClick="@(async () => await ResetStats())"></MatButton>
+    </div>
+</div>
 @code {
-    protected DeckStats DeckStats { get; set; }
+    //protected DeckStats DeckStats { get; set; }
     protected string Percent
     {
         get
@@ -16,11 +22,18 @@
             return toPercent.ToString("P1");
         }
     }
-    protected override Task OnInitializedAsync()
+
+    protected string deckName;
+    protected override async Task OnInitializedAsync()
     {
-        DeckStats = DeckState.DeckStats;        
+        await UpdateState();
+        deckName = SelectedDeck.Name ?? "No Deck Selected";
         DeckState.OnChange += UpdateState;
-        return base.OnInitializedAsync();
+    }
+
+    protected async Task ResetStats()
+    {
+        await DeckState.ResetDeckStats(SelectedDeck);
     }
     public void Dispose() => DeckState.OnChange -= UpdateState;
 }

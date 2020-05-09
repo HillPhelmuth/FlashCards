@@ -13,9 +13,9 @@ namespace FlashCards.Services
     {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-        //private readonly FlashCardsDbContext _context;
-        private readonly FlashCardsSqlLiteDbCtx _context;
-        public FlashCardsDbService(AuthenticationStateProvider authenticationStateProvider, FlashCardsSqlLiteDbCtx context)
+        private readonly FlashCardsDbContext _context;
+        //private readonly FlashCardsSqlLiteDbCtx _context;
+        public FlashCardsDbService(AuthenticationStateProvider authenticationStateProvider, FlashCardsDbContext context)
         {
             _authenticationStateProvider = authenticationStateProvider;
             _context = context;
@@ -83,7 +83,6 @@ namespace FlashCards.Services
             cardToUpdate.Question = card.Question;
             cardToUpdate.Answer = card.Answer;
             await context.SaveChangesAsync();
-
         }
         [HttpDelete]
         public async Task RemoveCardFromDeck(Card card)

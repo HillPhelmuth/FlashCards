@@ -12,29 +12,15 @@
                 <div style="margin:auto">
                     <MatTextField Style="width:28em" @bind-Value="answer" TextArea="true" Label="Correct Answer"></MatTextField>
                 </div><br />
-                <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to SelectedDeck</button>
+                <button class="btn btn-primary" @onclick="AddCardToDeck">Add Card to Deck</button>
             </div>
         </TabPage>
 
-        <TabPage Text="Definition Flashcards" Size="small">
-            <div class="col">
-                <MatTextField @bind-Value="wordSearch" @onkeyup="VocabKeyUp" Label="Vocab Word"></MatTextField>
-                <button class="btn btn-primary" @onclick="CreateVocabCard">Add Vocab Card</button>
-                <br />
-                <button @onclick="@(() => CreateRandomVocabCards())" @onmousedown="ShowLoading">Add Many (random)</button><br />
-                @if (isLoading)
-                {
-                    <p>adding cards...</p>
-                    <MatProgressBar Indeterminate="true"></MatProgressBar>
-                    <MatProgressBar Indeterminate="true" Reversed="true"></MatProgressBar>
-                }
-            </div>
-        </TabPage>
     </TabControl>
 
 </div>
 <div class="text-center">
-    <h4>SelectedDeck Stats</h4>
+    <h4>Deck Stats</h4>
     <ScoreBoard />
     <br />
     <button class="btn btn-primary" @onclick="@(() => isShowCards = !isShowCards)">Show/Hide Cards</button>

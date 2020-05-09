@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,9 +12,6 @@ using Microsoft.Extensions.Hosting;
 using FlashCards.Areas.Identity;
 using FlashCards.Data;
 using FlashCards.Services;
-using FlashCards.Interfaces;
-using Microsoft.AspNetCore.Http.Extensions;
-
 
 namespace FlashCards
 {
@@ -43,16 +35,11 @@ namespace FlashCards
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddDbContext<FlashCardsDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("FlashCardsDb")));
-            services.AddDbContext<FlashCardsSqlLiteDbCtx>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("FlashCardsSqlite")));
+                    Configuration.GetConnectionString("FlashCardsDb")), ServiceLifetime.Transient);
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddTransient<FlashCardsDbService>();
-            services.AddScoped<IWordsApiService, WordsApiService>();
-            services.AddScoped<IWordQuizService, WordQuizService>();
-            services.AddScoped<IMathQuizService, MathQuizService>();
             services.AddScoped<DeckStateService>();
             services.AddHttpClient();
             services.AddScoped(s =>

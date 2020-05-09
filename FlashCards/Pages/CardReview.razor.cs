@@ -31,8 +31,6 @@ namespace FlashCards.Pages
         {
             await UpdateState();
             DeckState.OnChange += UpdateState;
-            //SelectedDeck = DeckState.SelectedDeck;
-            //DeckCards = DeckState.Cards;
             AddTestAnswers();
             DisplayCard = DeckCards[0];
             Answers = DisplayCard.DisplayAnswers;
@@ -62,23 +60,28 @@ namespace FlashCards.Pages
             Answers.Shuffle();
             StateHasChanged();
         }
-        protected void CheckAnswer(AnswerData answer)
+        protected async Task CheckAnswer(AnswerData answer)
         {
+            bool isCorrect;
             if (answer.Answer == DisplayCard.Answer)
             {
                 answer.IsCorrect = true;
                 answer.IsIncorrect = false;
                 answer.CssClass = "correct";
                 correctTotal++;
-                DeckState.UpdateStats(true);
-                StateHasChanged();
-                return;
+                isCorrect = true;
             }
-            answer.IsCorrect = false;
-            answer.IsIncorrect = true;
-            answer.CssClass = "wrong";
-            wrongTotal++;
-            DeckState.UpdateStats(false);
+            else
+            {
+                answer.IsCorrect = false;
+                answer.IsIncorrect = true;
+                answer.CssClass = "wrong";
+                wrongTotal++;
+                isCorrect = false;
+            }
+            await DeckState.UpdateStats(isCorrect);
+            var stats = DeckState.DeckStats;
+            
             StateHasChanged();
         }
         protected void CardAnimEnd() => enabled = false;

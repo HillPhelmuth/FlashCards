@@ -1,20 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FlashCards.Models;
-using FlashCards.Services;
 using FlashCards.Shared;
-using Microsoft.AspNetCore.Components;
 
 namespace FlashCards.Pages
 {
     public class UserPageModel : FlashCardComponentBase
     {
-        [Parameter]
-        public List<Deck> UserDecks { get; set; }
-        //[Parameter]
-        //public Deck SelectedDeck { get; set; }
-        //[Parameter]
-        //public List<Card> DeckCards { get; set; }
         protected Deck newDeck = new Deck();
         protected string deckName = "no deck selected";
         protected string deckDeleteMessage;
@@ -27,8 +19,8 @@ namespace FlashCards.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            UserDecks = await Database.GetUserDecks();
-            await DeckState.UpdateUserDeckCards(UserDecks);
+            await UpdateState();
+            DeckState.OnChange += UpdateState;
             if (UserDecks.Count > 0)
                 userHasDecks = true;
             else
@@ -40,8 +32,8 @@ namespace FlashCards.Pages
             UserDecks.Add(newDeck);
             SelectedDeck = newDeck;
             deckName = newDeck.Name;
-            await DeckState.UpdateSelectedDeckAsync(SelectedDeck);
-            await Database.AddDeck(newDeck.Name, newDeck.Subject);
+            await DeckState.UpdateSelectedDeckAsync(SelectedDeck, true);
+            
             isAddCard = true;
             isSelectDeck = true;
         }
@@ -50,9 +42,8 @@ namespace FlashCards.Pages
             SelectedDeck = UserDecks.Find(x => x.Name == deckName);
             await DeckState.UpdateSelectedDeckAsync(SelectedDeck);
             isAddCard = true;
-            DeckCards = await Database.GetDeckCards(SelectedDeck);
-            if (SelectedDeck != null) SelectedDeck.Cards = DeckCards;
-            await DeckState.UpdateDeckCards(SelectedDeck, DeckCards);
+            DeckCards = DeckState.SelectedDeck?.Cards;
+            
             isSelectDeck = true;
             StateHasChanged();
         }
@@ -75,8 +66,8 @@ namespace FlashCards.Pages
         {
             if (deck.IsDeleteConfirm)
             {
-                var cards = await Database.GetDeckCards(deck);
-                await Database.RemoveDeck(deck, cards);
+                var cards = await DeckState.GetDeckCards(deck);
+                await DeckState.RemoveDeck(deck, cards);
                 UserDecks.Remove(deck);
                 deck.ConfirmDelete = "";
                 deck.CssConfirmClass = "";
