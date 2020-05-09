@@ -230,7 +230,7 @@ app {
         min-width: 20em;
         max-width: none;
         position: relative;
-        flex-direction: row;
+        
         
     }
         .scoreboard .score {
